@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/next";
 import { Providers } from "@/components/Providers";
 import { JsonLd } from "@/components/JsonLd";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { siteUrl } from "@/lib/site-url";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -23,12 +26,13 @@ export const metadata: Metadata = {
   },
   description:
     "AI/ML Engineer building intelligent, cloud-native solutions. AWS Certified (×3). Turning data into real business impact with Python, AWS & Generative AI.",
-  metadataBase: new URL("https://akashkachhadiya.vercel.app"),
+  metadataBase: new URL(siteUrl),
+  alternates: { canonical: "/" },
   openGraph: {
     title: "Akash Kachhadiya — AI/ML Engineer",
     description:
       "AI/ML Engineer at Calyza Tech with 3 AWS certifications. Specializing in Machine Learning, Generative AI, and Data Science.",
-    url: "https://akashkachhadiya.vercel.app",
+    url: siteUrl,
     siteName: "Akash Kachhadiya",
     locale: "en_US",
     type: "website",
@@ -64,6 +68,8 @@ export default function RootLayout({
           <main className="flex-1 pt-16">{children}</main>
           <Footer />
         </Providers>
+        <SpeedInsights />
+        <Analytics />
       </body>
     </html>
   );

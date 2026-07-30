@@ -61,15 +61,17 @@ export function Navbar() {
 
         {/* Right side: Resume + Theme + Mobile toggle */}
         <div className="flex items-center gap-3">
-          <a
-            href={siteConfig.resumePath}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hidden sm:inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
-          >
-            <FileText className="h-4 w-4" />
-            Resume
-          </a>
+          {siteConfig.resumePath && (
+            <a
+              href={siteConfig.resumePath}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden sm:inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all"
+            >
+              <FileText className="h-4 w-4" />
+              Resume
+            </a>
+          )}
 
           <ThemeToggle />
 
@@ -103,18 +105,20 @@ export function Navbar() {
                 </a>
               </li>
             ))}
-            <li>
-              <a
-                href={siteConfig.resumePath}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => setMobileOpen(false)}
-                className="mt-2 flex items-center gap-2 rounded-md bg-primary px-3 py-2.5 text-base font-medium text-primary-foreground"
-              >
-                <FileText className="h-4 w-4" />
-                Resume
-              </a>
-            </li>
+            {siteConfig.resumePath && (
+              <li>
+                <a
+                  href={siteConfig.resumePath}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setMobileOpen(false)}
+                  className="mt-2 flex items-center gap-2 rounded-md bg-primary px-3 py-2.5 text-base font-medium text-primary-foreground"
+                >
+                  <FileText className="h-4 w-4" />
+                  Resume
+                </a>
+              </li>
+            )}
           </ul>
         </div>
       )}

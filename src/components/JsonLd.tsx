@@ -1,8 +1,8 @@
 import { siteConfig } from "@/data/site-config";
 import { faqs } from "@/data/faq";
+import { siteUrl as baseUrl } from "@/lib/site-url";
 
 export function JsonLd() {
-  const baseUrl = "https://akashkachhadiya.vercel.app";
 
   const personSchema = {
     "@context": "https://schema.org",

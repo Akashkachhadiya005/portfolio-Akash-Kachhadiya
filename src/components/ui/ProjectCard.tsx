@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "motion/react";
+import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import type { Project } from "@/types";
 
@@ -38,13 +39,13 @@ export function ProjectCard({ project }: { project: Project }) {
 
       {/* Link */}
       <div className="mt-auto pt-4">
-        <a
+        <Link
           href={`/projects/${project.slug}`}
           className="inline-flex items-center gap-1 text-sm font-medium text-foreground hover:text-accent transition-colors"
         >
           View case study
           <ArrowUpRight className="h-3.5 w-3.5" />
-        </a>
+        </Link>
       </div>
     </motion.div>
   );

@@ -12,7 +12,8 @@ export type SiteConfig = {
   currentLocation: string;
   github: string;
   linkedin: string;
-  resumePath: string;
+  /** Path to resume PDF in /public. Undefined = hide Resume button. */
+  resumePath?: string;
 };
 
 export type NavLink = {

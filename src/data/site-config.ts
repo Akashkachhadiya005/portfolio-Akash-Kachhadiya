@@ -14,5 +14,7 @@ export const siteConfig: SiteConfig = {
   currentLocation: "Ahmedabad, Gujarat, India",
   github: "https://github.com/Akashkachhadiya005",
   linkedin: "https://www.linkedin.com/in/akash-kachhadiya-3371b9315/",
-  resumePath: "/resume/akash-kachhadiya-resume.pdf",
+  // Set to the PDF path once the file is added to public/resume/.
+  // Leave undefined to hide the Resume button (avoids a 404).
+  resumePath: undefined,
 };
