@@ -1,0 +1,88 @@
+@import "tailwindcss";
+
+/* ============================================================
+   THEME TOKENS — from colors1.png palette
+   #003135 (deep dark teal) | #024950 (dark teal) | #964734 (button)
+   #0FA4AF (bright cyan accent) | #AFDDE5 (soft light cyan)
+   Change brand = change here only. Components use tokens.
+   ============================================================ */
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-ring: var(--ring);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+}
+
+/* ---------- LIGHT MODE ---------- */
+:root {
+  --background: #fafffe;
+  --foreground: #003135;
+  --card: #ffffff;
+  --muted: #e8f6f8;
+  --muted-foreground: #1b5e5e;
+  --border: #c5e8ed;
+  --primary: #964734;
+  --primary-foreground: #ffffff;
+  --secondary: #024950;
+  --secondary-foreground: #ffffff;
+  --accent: #0fa4af;
+  --accent-foreground: #003135;
+  --ring: #964734;
+}
+
+/* ---------- DARK MODE (next-themes class="dark") ---------- */
+.dark {
+  --background: #003135;
+  --foreground: #f0fafb;
+  --card: #024950;
+  --muted: #024950;
+  --muted-foreground: #afdde5;
+  --border: #0fa4af33;
+  --primary: #964734;
+  --primary-foreground: #ffffff;
+  --secondary: #0fa4af;
+  --secondary-foreground: #003135;
+  --accent: #0fa4af;
+  --accent-foreground: #003135;
+  --ring: #964734;
+}
+
+/* ---------- BASE STYLES ---------- */
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+/* Smooth theme transition (only on non-canvas elements) */
+*:not(canvas):not(canvas *),
+*:not(canvas)::before,
+*:not(canvas)::after {
+  transition-property: background-color, border-color, color;
+  transition-duration: 200ms;
+  transition-timing-function: ease-in-out;
+}
+
+/* Disable transitions for reduced-motion users */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0ms !important;
+    animation-duration: 0ms !important;
+  }
+}

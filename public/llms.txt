@@ -1,0 +1,23 @@
+# Akash Kachhadiya — AI/ML Engineer Portfolio
+
+> AI/ML Engineer at Calyza Tech with 3 AWS certifications. Building intelligent,
+> cloud-native solutions with Python, AWS & Generative AI.
+
+## Pages
+
+- / — Home (Hero, About, Skills, Projects, Experience, Certifications, FAQ, Contact)
+- /projects — All ML/AI projects
+- /projects/skin-disorder-prediction — Skin Disorder Classification (98.65% accuracy)
+- /projects/customer-churn-prediction — Customer Churn Prediction (91.33% accuracy)
+- /projects/employee-performance-analysis — Employee Performance Analysis (92.33% accuracy)
+- /projects/texas-salary-prediction — Texas Salary Prediction
+- /certifications — All professional certifications (3 AWS + IABAC + NASSCOM + Microsoft)
+
+## Key Facts
+
+- Name: Akash Kachhadiya
+- Role: AI/ML Engineer at Calyza Tech, Ahmedabad, India
+- AWS Certifications: ML Engineer Associate, Solutions Architect Associate, AI Practitioner
+- Skills: Machine Learning, Generative AI, Deep Learning, NLP, Python, SQL, AWS, Databricks
+- Education: B.Com + Datamites Data Science
+- Contact: akashkachhadiya55@gmail.com
