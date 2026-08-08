@@ -6,59 +6,26 @@ import { cn } from "@/lib/utils";
 import { useMounted } from "@/hooks/useMounted";
 
 /**
- * Swaps the theme inside a View Transition, so the browser crossfades a snapshot
- * on the compositor instead of repainting every element that the palette
- * variables touch. The reveal is a circle growing from the button that was
- * pressed, which is why the coordinates are pushed into CSS vars first.
- *
- * Falls back to a plain switch where View Transitions are unsupported.
+ * Theme changes are applied directly so WebGL never enters a page snapshot.
+ * A small, fixed compositor-only pulse at the selected segment gives the switch
+ * a distinctive response without animating or repainting the full document.
  */
 function switchTheme(apply: () => void, origin: HTMLElement) {
-  const root = document.documentElement;
-
-  const startViewTransition = (
-    document as Document & {
-      startViewTransition?: (cb: () => void) => { finished: Promise<void> };
-    }
-  ).startViewTransition;
-
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-  if (typeof startViewTransition !== "function" || reduceMotion) {
-    apply();
-    return;
-  }
-
-  // Chromium can retain/corrupt a WebGL canvas in root View Transition
-  // snapshots, producing the black contour frame seen during dark -> light.
-  // Switch the real canvas directly and use one cheap opacity pulse instead.
-  if (document.querySelector('.aurora[data-mode="live"]')) {
-    apply();
-    root.animate([{ opacity: 0.94 }, { opacity: 1 }], {
-      duration: 180,
-      easing: "ease-out",
-    });
-    return;
-  }
-
   const r = origin.getBoundingClientRect();
   const x = r.left + r.width / 2;
   const y = r.top + r.height / 2;
-  // Radius that still covers the furthest corner from this origin
-  const radius = Math.hypot(
-    Math.max(x, window.innerWidth - x),
-    Math.max(y, window.innerHeight - y),
-  );
 
-  root.style.setProperty("--tx", `${x}px`);
-  root.style.setProperty("--ty", `${y}px`);
-  root.style.setProperty("--tr", `${Math.ceil(radius)}px`);
-  root.dataset.themeReveal = "1";
+  apply();
+  if (reduceMotion) return;
 
-  const transition = startViewTransition.call(document, apply);
-  transition.finished.finally(() => {
-    delete root.dataset.themeReveal;
-  });
+  const pulse = document.createElement("span");
+  pulse.className = "theme-switch-pulse";
+  pulse.style.setProperty("--pulse-x", `${x}px`);
+  pulse.style.setProperty("--pulse-y", `${y}px`);
+  pulse.setAttribute("aria-hidden", "true");
+  document.body.appendChild(pulse);
+  pulse.addEventListener("animationend", () => pulse.remove(), { once: true });
 }
 
 const OPTIONS = [

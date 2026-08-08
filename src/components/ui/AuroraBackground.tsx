@@ -127,11 +127,27 @@ export function AuroraBackground({ className, intensity = 1 }: AuroraBackgroundP
     });
     ro.observe(host);
     renderer.resize(host.clientWidth, host.clientHeight);
-    renderer.start();
 
-    // next-themes changes the root class inside the View Transition callback.
-    // Observe that class directly so the canvas updates in the same transition
-    // instead of showing one frame from the previous theme.
+    // A full-hero procedural shader has no reason to run while the hero is far
+    // outside the viewport. Pausing here preserves the exact visible effect and
+    // removes its GPU cost while visitors scroll through lower sections.
+    let isNearViewport = true;
+    const syncLoop = () => {
+      if (document.hidden || !isNearViewport) renderer.stop();
+      else renderer.start();
+    };
+    const intersectionObserver = new IntersectionObserver(
+      ([entry]) => {
+        isNearViewport = entry?.isIntersecting ?? false;
+        syncLoop();
+      },
+      { rootMargin: "160px 0px" },
+    );
+    intersectionObserver.observe(host);
+    syncLoop();
+
+    // next-themes changes the root class directly. Observe that class so the
+    // canvas and UI tokens update in the same frame.
     const root = document.documentElement;
     const syncTheme = () => {
       const nextDark = root.classList.contains("dark");
@@ -141,8 +157,7 @@ export function AuroraBackground({ className, intensity = 1 }: AuroraBackgroundP
     themeObserver.observe(root, { attributes: true, attributeFilter: ["class"] });
 
     const onVisibility = () => {
-      if (document.hidden) renderer.stop();
-      else renderer.start();
+      syncLoop();
     };
     document.addEventListener("visibilitychange", onVisibility);
 
@@ -155,7 +170,7 @@ export function AuroraBackground({ className, intensity = 1 }: AuroraBackgroundP
     };
     const onRestored = () => {
       host.dataset.mode = "live";
-      renderer.start();
+      syncLoop();
     };
     canvas.addEventListener("webglcontextlost", onLost);
     canvas.addEventListener("webglcontextrestored", onRestored);
@@ -181,6 +196,7 @@ export function AuroraBackground({ className, intensity = 1 }: AuroraBackgroundP
 
     return () => {
       ro.disconnect();
+      intersectionObserver.disconnect();
       themeObserver.disconnect();
       document.removeEventListener("visibilitychange", onVisibility);
       canvas.removeEventListener("webglcontextlost", onLost);

@@ -24,28 +24,48 @@ const MAX_TILT_DEG = 7;
 
 export function PhotoFrame() {
   const ref = useRef<HTMLDivElement | null>(null);
+  const rectRef = useRef<DOMRect | null>(null);
+  const pointerRef = useRef({ x: 0, y: 0 });
+  const frameRef = useRef<number | null>(null);
 
-  const onPointerMove = useCallback((e: React.PointerEvent) => {
+  const applyPointer = useCallback(() => {
+    frameRef.current = null;
     const el = ref.current;
-    if (!el) return;
-    const r = el.getBoundingClientRect();
-    const nx = (e.clientX - r.left) / r.width - 0.5;
-    const ny = (e.clientY - r.top) / r.height - 0.5;
+    const r = rectRef.current;
+    if (!el || !r) return;
+    const { x, y } = pointerRef.current;
+    const nx = (x - r.left) / r.width - 0.5;
+    const ny = (y - r.top) / r.height - 0.5;
     el.style.setProperty("--ry", `${(nx * 2 * MAX_TILT_DEG).toFixed(2)}deg`);
     el.style.setProperty("--rx", `${(-ny * 2 * MAX_TILT_DEG).toFixed(2)}deg`);
-    el.style.setProperty(
-      "--px",
-      `${(((e.clientX - r.left) / r.width) * 100).toFixed(1)}%`,
-    );
-    el.style.setProperty(
-      "--py",
-      `${(((e.clientY - r.top) / r.height) * 100).toFixed(1)}%`,
-    );
+    el.style.setProperty("--px", `${(((x - r.left) / r.width) * 100).toFixed(1)}%`);
+    el.style.setProperty("--py", `${(((y - r.top) / r.height) * 100).toFixed(1)}%`);
   }, []);
+
+  const onPointerEnter = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    rectRef.current = e.currentTarget.getBoundingClientRect();
+  }, []);
+
+  const onPointerMove = useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
+      pointerRef.current.x = e.clientX;
+      pointerRef.current.y = e.clientY;
+      rectRef.current ??= e.currentTarget.getBoundingClientRect();
+      if (frameRef.current === null) {
+        frameRef.current = requestAnimationFrame(applyPointer);
+      }
+    },
+    [applyPointer],
+  );
 
   const onPointerLeave = useCallback(() => {
     const el = ref.current;
     if (!el) return;
+    if (frameRef.current !== null) {
+      cancelAnimationFrame(frameRef.current);
+      frameRef.current = null;
+    }
+    rectRef.current = null;
     el.style.setProperty("--rx", "0deg");
     el.style.setProperty("--ry", "0deg");
     el.dataset.settling = "1";
@@ -62,6 +82,7 @@ export function PhotoFrame() {
     <div className="photo-frame-wrap self-center lg:self-stretch">
       <div
         ref={setRef}
+        onPointerEnter={onPointerEnter}
         onPointerMove={onPointerMove}
         onPointerLeave={onPointerLeave}
         className="photo-frame"

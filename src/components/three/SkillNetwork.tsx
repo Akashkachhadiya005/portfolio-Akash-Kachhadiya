@@ -844,6 +844,7 @@ export default function SkillNetwork() {
   // the tile elements' width/height come from it and must re-render on change —
   // which only happens on resize / rotation, not per frame.
   const [tilePx, setTilePx] = useState(TILE_PX);
+  const [isNearViewport, setIsNearViewport] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const sparkRef = useRef<HTMLDivElement>(null);
   const lightningRef = useRef<LightningHandle | null>(null);
@@ -875,7 +876,21 @@ export default function SkillNetwork() {
     apply();
     const ro = new ResizeObserver(apply);
     ro.observe(el);
-    return () => ro.disconnect();
+
+    // Keep the exact physics/drag/lightning behavior while visible, but stop the
+    // R3F render loop when this section is far offscreen. This is the largest
+    // scroll-performance win because both useFrame callbacks otherwise run for
+    // the entire page lifetime.
+    const io = new IntersectionObserver(
+      ([entry]) => setIsNearViewport(entry?.isIntersecting ?? false),
+      { rootMargin: "180px 0px" },
+    );
+    io.observe(el);
+
+    return () => {
+      ro.disconnect();
+      io.disconnect();
+    };
   }, []);
 
   const showCloud = useCallback((index: number) => {
@@ -897,7 +912,11 @@ export default function SkillNetwork() {
     // The balls themselves are provably bounded in the physics loop, so nothing
     // needs clipping — letting the halo fade out naturally keeps the frame edge
     // undetectable on all four sides.
-    <div ref={containerRef} className="relative h-full w-full select-none">
+    <div
+      ref={containerRef}
+      data-skill-visible={isNearViewport ? "true" : "false"}
+      className="relative h-full w-full select-none"
+    >
       {/* Storm flash backdrop. First in DOM so it paints BEHIND the balls;
           opacity is driven per frame by LightningSync. */}
       <div
@@ -958,6 +977,7 @@ export default function SkillNetwork() {
       <LightningCanvas handleRef={lightningRef} />
 
       <Canvas
+        frameloop={isNearViewport ? "always" : "never"}
         camera={{ position: [0, 0, 7], fov: 50 }}
         dpr={[1, 1.5]}
         gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}

@@ -1,11 +1,30 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, useScroll, useSpring, useTransform } from "motion/react";
 import { experience } from "@/data/experience";
 
 export function ExperienceSection() {
   const timelineRef = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
+
+  // The rail's packet and read-head loops are infinite. Left unguarded they
+  // repaint for the whole life of the page, including while the visitor is
+  // scrolling somewhere else entirely — measurable frame cost for something
+  // nobody can see. Pausing them offscreen changes nothing about how the
+  // section looks or behaves once it is in view.
+  const [inView, setInView] = useState(false);
+
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => setInView(entry?.isIntersecting ?? false),
+      { rootMargin: "150px 0px" },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
 
   // Progress of the timeline through the viewport. The offsets start the fill
   // when the timeline's top reaches ~65% down the screen and finish it as its
@@ -37,7 +56,12 @@ export function ExperienceSection() {
   );
 
   return (
-    <section id="experience" className="bg-muted/30 py-20 sm:py-28">
+    <section
+      id="experience"
+      ref={sectionRef}
+      data-rail-live={inView ? "true" : "false"}
+      className="bg-muted/30 py-20 sm:py-28"
+    >
       <div className="page-shell-narrow">
         <motion.div
           initial={{ opacity: 0, y: 30 }}

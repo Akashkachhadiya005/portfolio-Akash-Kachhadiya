@@ -184,7 +184,7 @@ export const FIELD = {
 
   /** Maximum light-mode pigment opacity. Colour is alpha-blended over the
    *  theme background, so even overlapping folds cannot collapse to black. */
-  lightPigment: 0.42,
+  lightPigment: 0.56,
 
   /** Field value remap. Four-octave fbm does not span 0..1 — measured over a
    *  frame it concentrates around 0.47 with a standard deviation near 0.08. This

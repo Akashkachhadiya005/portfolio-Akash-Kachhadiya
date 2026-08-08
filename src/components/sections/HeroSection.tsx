@@ -88,7 +88,7 @@ export function HeroSection() {
       {/* Explicitly above the mesh. A positioned element paints over static
           in-flow content regardless of DOM order, so the copy needs its own
           layer or the mesh would sit on top of the headline. */}
-      <div className="relative z-10 mx-auto max-w-4xl text-center">
+      <div className="hero-copy relative z-10 mx-auto max-w-4xl text-center">
         {/* Name */}
         <motion.p
           initial={{ opacity: 0, y: 20 }}

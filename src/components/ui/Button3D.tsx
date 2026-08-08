@@ -58,6 +58,9 @@ export function Button3D(props: AnchorProps | ButtonProps) {
 
   const inner = (
     <>
+      {/* The moulded bar. Kept as its own layer so its shading never affects
+          text rendering, focus outlines, or hit testing. */}
+      <span className="btn5-body" aria-hidden="true" />
       <span className="btn5-trace" aria-hidden="true" />
       <span className="btn5-label">{children}</span>
     </>

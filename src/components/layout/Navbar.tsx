@@ -32,9 +32,7 @@ export function Navbar() {
     <header
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-        scrolled
-          ? "bg-background/80 backdrop-blur-md border-b border-border shadow-sm"
-          : "bg-transparent",
+        scrolled ? "bg-background/95 border-b border-border shadow-sm" : "bg-transparent",
       )}
     >
       {/* bar-shell has NO max-width — that is what keeps the logo pinned to the
@@ -72,8 +70,6 @@ export function Navbar() {
               rel="noopener noreferrer"
               /* h-9 matches the ThemeToggle's height so the two controls sit on
                  one optical line, and the pill radius matches it too. */
-              /* h-9 + tighter padding keeps it on the same optical line as the
-                 theme toggle; the pill radius already matches. */
               className="hidden h-9 px-4 sm:inline-flex"
             >
               <FileText className="h-4 w-4" aria-hidden="true" />
@@ -97,7 +93,7 @@ export function Navbar() {
 
       {/* Mobile menu */}
       {mobileOpen && (
-        <div className="lg:hidden border-t border-border bg-background/95 backdrop-blur-md">
+        <div className="lg:hidden border-t border-border bg-background/98">
           <ul className="flex flex-col gap-1 px-4 py-4">
             {navLinks.map((link) => (
               <li key={link.href}>
