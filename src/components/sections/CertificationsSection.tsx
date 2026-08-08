@@ -10,27 +10,24 @@ export function CertificationsSection() {
   const awsCerts = certifications.filter((c) => c.category === "AWS");
 
   return (
-    <section
-      id="certifications"
-      className="px-4 py-20 sm:px-6 sm:py-28 lg:px-8"
-    >
-      <div className="mx-auto max-w-6xl">
+    <section id="certifications" className="py-20 sm:py-28">
+      <div className="page-shell-narrow">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.5 }}
+          className="text-center"
         >
           <h2 className="text-sm font-medium uppercase tracking-widest text-accent">
             Certifications
           </h2>
-          <p className="mt-2 text-3xl font-bold sm:text-4xl">
-            Verified Credentials
-          </p>
+          <p className="mt-2 text-3xl font-bold sm:text-4xl">Verified Credentials</p>
         </motion.div>
 
         {/* AWS certs — prominent cards */}
-        <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {/* Fixed card size at every zoom; the count adapts, not the width */}
+        <div className="card-grid mt-10">
           {awsCerts.map((cert, i) => (
             <motion.div
               key={cert.id}
@@ -60,9 +57,7 @@ export function CertificationsSection() {
                 {cert.name}
               </h3>
 
-              <p className="mt-1 text-sm text-muted-foreground">
-                {cert.issuer}
-              </p>
+              <p className="mt-1 text-sm text-muted-foreground">{cert.issuer}</p>
 
               <div className="mt-3 flex flex-wrap gap-2 text-xs text-muted-foreground">
                 <span className="rounded-full border border-border px-2 py-0.5">

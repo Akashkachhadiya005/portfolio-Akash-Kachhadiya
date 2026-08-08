@@ -10,82 +10,80 @@ export const contentType = "image/png";
  */
 export default function Image() {
   return new ImageResponse(
-    (
+    <div
+      style={{
+        height: "100%",
+        width: "100%",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "linear-gradient(135deg, #003135 0%, #024950 100%)",
+        fontFamily: "sans-serif",
+      }}
+    >
       <div
         style={{
-          height: "100%",
-          width: "100%",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          background: "linear-gradient(135deg, #003135 0%, #024950 100%)",
-          fontFamily: "sans-serif",
+          fontSize: 24,
+          color: "#0FA4AF",
+          letterSpacing: 4,
+          textTransform: "uppercase",
+          marginBottom: 16,
         }}
       >
-        <div
-          style={{
-            fontSize: 24,
-            color: "#0FA4AF",
-            letterSpacing: 4,
-            textTransform: "uppercase",
-            marginBottom: 16,
-          }}
-        >
-          Portfolio
-        </div>
-        <div
-          style={{
-            fontSize: 78,
-            fontWeight: 700,
-            color: "#F0FAFB",
-            letterSpacing: -2,
-          }}
-        >
-          Akash Kachhadiya
-        </div>
-        <div
-          style={{
-            fontSize: 38,
-            color: "#AFDDE5",
-            marginTop: 12,
-          }}
-        >
-          AI/ML Engineer
-        </div>
-        <div
-          style={{
-            display: "flex",
-            gap: 16,
-            marginTop: 40,
-          }}
-        >
-          {["AWS ML Engineer", "Solutions Architect", "AI Practitioner"].map((t) => (
-            <div
-              key={t}
-              style={{
-                fontSize: 20,
-                color: "#0FA4AF",
-                border: "2px solid rgba(15,164,175,0.4)",
-                borderRadius: 999,
-                padding: "8px 20px",
-              }}
-            >
-              {t}
-            </div>
-          ))}
-        </div>
-        <div
-          style={{
-            marginTop: 44,
-            width: 120,
-            height: 6,
-            borderRadius: 999,
-            background: "#964734",
-          }}
-        />
+        Portfolio
       </div>
-    ),
+      <div
+        style={{
+          fontSize: 78,
+          fontWeight: 700,
+          color: "#F0FAFB",
+          letterSpacing: -2,
+        }}
+      >
+        Akash Kachhadiya
+      </div>
+      <div
+        style={{
+          fontSize: 38,
+          color: "#AFDDE5",
+          marginTop: 12,
+        }}
+      >
+        AI/ML Engineer
+      </div>
+      <div
+        style={{
+          display: "flex",
+          gap: 16,
+          marginTop: 40,
+        }}
+      >
+        {["AWS ML Engineer", "Solutions Architect", "AI Practitioner"].map((t) => (
+          <div
+            key={t}
+            style={{
+              fontSize: 20,
+              color: "#0FA4AF",
+              border: "2px solid rgba(15,164,175,0.4)",
+              borderRadius: 999,
+              padding: "8px 20px",
+            }}
+          >
+            {t}
+          </div>
+        ))}
+      </div>
+      <div
+        style={{
+          marginTop: 44,
+          width: 120,
+          height: 6,
+          borderRadius: 999,
+          background: "#db360c",
+        }}
+      />
+    </div>,
     size,
   );
 }

@@ -1,0 +1,17 @@
+{
+  // Fast, deterministic typecheck for the agent verify loop.
+  //
+  // The base tsconfig's `include` explicitly names `.next/types/**/*.ts` and
+  // `.next/dev/types/**/*.ts`, because Next.js generates route-type validators
+  // there. `next dev` writes those files incrementally, so while the dev server
+  // is running (or if it was killed mid-write) they are frequently truncated,
+  // and `tsc --noEmit` then fails on generated code that has nothing to do
+  // with our source.
+  //
+  // An `exclude` alone did not reliably keep them out, so `include` is
+  // overridden here to just our own files. Real route-type validation still
+  // happens in `next build`, which `npm run verify` also runs — nothing is lost.
+  "extends": "./tsconfig.json",
+  "include": ["next-env.d.ts", "src/**/*.ts", "src/**/*.tsx", "*.ts", "*.mts"],
+  "exclude": ["node_modules", ".next"]
+}

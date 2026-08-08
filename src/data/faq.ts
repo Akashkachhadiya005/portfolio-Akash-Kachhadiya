@@ -18,8 +18,7 @@ export const faqs: FAQ[] = [
   },
   {
     question: "Where is Akash based?",
-    answer:
-      "Home town Surat, Gujarat; currently based in Ahmedabad, Gujarat, India.",
+    answer: "Home town Surat, Gujarat; currently based in Ahmedabad, Gujarat, India.",
   },
   {
     question: "How can I contact or hire Akash?",

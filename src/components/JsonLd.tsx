@@ -3,7 +3,6 @@ import { faqs } from "@/data/faq";
 import { siteUrl as baseUrl } from "@/lib/site-url";
 
 export function JsonLd() {
-
   const personSchema = {
     "@context": "https://schema.org",
     "@type": "Person",

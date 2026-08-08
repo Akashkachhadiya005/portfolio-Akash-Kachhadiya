@@ -10,10 +10,7 @@ export function FAQSection() {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   return (
-    <section
-      id="faq"
-      className="bg-muted/30 px-4 py-20 sm:px-6 sm:py-28 lg:px-8"
-    >
+    <section id="faq" className="bg-muted/30 px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
       <div className="mx-auto max-w-3xl">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -25,9 +22,7 @@ export function FAQSection() {
           <h2 className="text-sm font-medium uppercase tracking-widest text-accent">
             FAQ
           </h2>
-          <p className="mt-2 text-3xl font-bold sm:text-4xl">
-            Common Questions
-          </p>
+          <p className="mt-2 text-3xl font-bold sm:text-4xl">Common Questions</p>
         </motion.div>
 
         <div className="mt-10 space-y-3">

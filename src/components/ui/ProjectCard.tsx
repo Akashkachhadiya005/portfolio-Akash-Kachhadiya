@@ -10,15 +10,13 @@ export function ProjectCard({ project }: { project: Project }) {
     <motion.div
       whileHover={{ y: -4 }}
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
-      className="group flex flex-col rounded-xl border border-border bg-card p-6 transition-shadow hover:shadow-lg hover:shadow-accent/5"
+      className="group flex h-full flex-col rounded-xl border border-border bg-card p-6 transition-shadow hover:shadow-lg hover:shadow-accent/5"
     >
       <h3 className="text-lg font-semibold text-foreground group-hover:text-accent transition-colors">
         {project.title}
       </h3>
 
-      <p className="mt-2 text-sm text-muted-foreground line-clamp-2">
-        {project.problem}
-      </p>
+      <p className="mt-2 text-sm text-muted-foreground line-clamp-2">{project.problem}</p>
 
       {/* Tech chips */}
       <div className="mt-4 flex flex-wrap gap-1.5">
@@ -33,9 +31,7 @@ export function ProjectCard({ project }: { project: Project }) {
       </div>
 
       {/* Impact */}
-      <p className="mt-4 text-sm font-semibold text-accent">
-        ↗ {project.impact}
-      </p>
+      <p className="mt-4 text-sm font-semibold text-accent">↗ {project.impact}</p>
 
       {/* Link */}
       <div className="mt-auto pt-4">

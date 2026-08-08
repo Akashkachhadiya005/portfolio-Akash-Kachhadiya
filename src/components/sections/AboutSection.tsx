@@ -3,6 +3,8 @@
 import { motion } from "motion/react";
 import { Award, Briefcase, FolderOpen } from "lucide-react";
 import { siteConfig } from "@/data/site-config";
+import { CountUp } from "@/components/ui/CountUp";
+import { PhotoFrame } from "@/components/ui/PhotoFrame";
 
 const stats = [
   { icon: Award, value: "3", label: "AWS Certifications" },
@@ -12,11 +14,8 @@ const stats = [
 
 export function AboutSection() {
   return (
-    <section
-      id="about"
-      className="px-4 py-20 sm:px-6 sm:py-28 lg:px-8"
-    >
-      <div className="mx-auto max-w-6xl">
+    <section id="about" className="py-20 sm:py-28">
+      <div className="page-shell-narrow">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -41,18 +40,21 @@ export function AboutSection() {
             className="lg:col-span-3"
           >
             <p className="text-base leading-relaxed text-muted-foreground sm:text-lg">
-              I started with a <strong className="text-foreground">B.Com</strong> foundation,
-              which gave me a strong grip on business logic, finance, and data analysis.
-              I then moved deep into <strong className="text-foreground">Data Science and
-              Machine Learning</strong>, and today I work as an{" "}
+              I started with a <strong className="text-foreground">B.Com</strong>{" "}
+              foundation, which gave me a strong grip on business logic, finance, and data
+              analysis. I then moved deep into{" "}
+              <strong className="text-foreground">
+                Data Science and Machine Learning
+              </strong>
+              , and today I work as an{" "}
               <strong className="text-foreground">AI Engineer at Calyza Tech</strong>,
               building ML and Generative AI solutions on AWS.
             </p>
             <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">
               My edge is combining business understanding with technical depth — I
               don&apos;t just build models, I build solutions that solve real business
-              problems. With 3 AWS certifications and hands-on production experience,
-              I bridge the gap between data and impact.
+              problems. With 3 AWS certifications and hands-on production experience, I
+              bridge the gap between data and impact.
             </p>
             <p className="mt-6 text-sm text-muted-foreground">
               📍 {siteConfig.currentLocation}
@@ -68,11 +70,10 @@ export function AboutSection() {
             className="flex flex-col gap-6 lg:col-span-2"
           >
             {/* Photo placeholder — replace with next/image when photo is optimized */}
-            <div className="aspect-square w-full max-w-[280px] self-center overflow-hidden rounded-2xl border border-border bg-muted/50 lg:max-w-none">
-              <div className="flex h-full items-center justify-center text-muted-foreground text-sm">
-                Photo
-              </div>
-            </div>
+            {/* Photo in a tilting glass frame. The source is 1200x1600 portrait,
+                so the frame carries a 3:4 ratio — forcing a square cropped the
+                head off. */}
+            <PhotoFrame />
 
             {/* Stats row */}
             <div className="grid grid-cols-3 gap-3">
@@ -81,8 +82,11 @@ export function AboutSection() {
                   key={label}
                   className="flex flex-col items-center rounded-xl border border-border bg-card p-3 text-center"
                 >
-                  <Icon className="h-5 w-5 text-accent" />
-                  <span className="mt-1 text-xl font-bold">{value}</span>
+                  <Icon className="h-5 w-5 text-accent" aria-hidden="true" />
+                  <CountUp
+                    value={value}
+                    className="mt-1 text-xl font-bold tabular-nums"
+                  />
                   <span className="text-xs text-muted-foreground">{label}</span>
                 </div>
               ))}

@@ -4,8 +4,7 @@ export const projects: Project[] = [
   {
     slug: "skin-disorder-prediction",
     title: "Skin Disorder Prediction",
-    problem:
-      "Classify skin disorders from medical data to assist clinical diagnosis.",
+    problem: "Classify skin disorders from medical data to assist clinical diagnosis.",
     approach:
       "Analyzed and preprocessed medical data. Implemented Random Forest, SVM, Bagging, XGBoost with hyperparameter tuning and feature selection.",
     stack: ["Python", "Scikit-learn", "XGBoost", "Jupyter", "Matplotlib"],

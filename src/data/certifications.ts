@@ -28,12 +28,7 @@ export const certifications: Certification[] = [
     expiryDate: "Feb 2029",
     badgeImage: "/images/certs/aws-solutions-architect.png",
     certificateImage: "/certs/aws-solutions-architect.pdf",
-    skills: [
-      "Cloud Architecture",
-      "Cloud Infrastructure",
-      "Cloud Services",
-      "AWS",
-    ],
+    skills: ["Cloud Architecture", "Cloud Infrastructure", "Cloud Services", "AWS"],
     category: "AWS",
   },
   {
@@ -45,12 +40,7 @@ export const certifications: Certification[] = [
     expiryDate: "May 2029",
     badgeImage: "/images/certs/aws-ai-practitioner.png",
     certificateImage: "/certs/aws-ai-practitioner.pdf",
-    skills: [
-      "AI and ML on AWS",
-      "Foundation Models",
-      "Generative AI",
-      "AWS Cloud",
-    ],
+    skills: ["AI and ML on AWS", "Foundation Models", "Generative AI", "AWS Cloud"],
     category: "AWS",
   },
   {

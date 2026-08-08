@@ -62,9 +62,7 @@ export default async function ProjectDetailPage({ params }: Props) {
         {/* Impact */}
         <div className="mt-6 rounded-lg border border-accent/30 bg-accent/5 p-4">
           <p className="text-sm font-medium text-accent">Impact</p>
-          <p className="mt-1 text-lg font-semibold text-foreground">
-            {project.impact}
-          </p>
+          <p className="mt-1 text-lg font-semibold text-foreground">{project.impact}</p>
         </div>
 
         {/* Sections */}

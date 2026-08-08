@@ -10,8 +10,8 @@ export const metadata: Metadata = {
 
 export default function ProjectsPage() {
   return (
-    <section className="px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
-      <div className="mx-auto max-w-6xl">
+    <section className="py-20 sm:py-28">
+      <div className="page-shell-narrow">
         <h1 className="text-3xl font-bold sm:text-4xl">All Projects</h1>
         <p className="mt-2 max-w-2xl text-muted-foreground">
           Each project focuses on solving a real problem with measurable impact.

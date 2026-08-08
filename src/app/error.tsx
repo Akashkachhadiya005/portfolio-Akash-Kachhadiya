@@ -1,5 +1,7 @@
 "use client";
 
+import { Button3D } from "@/components/ui/Button3D";
+
 export default function Error({
   reset,
 }: {
@@ -13,12 +15,9 @@ export default function Error({
       <p className="mt-2 max-w-md text-muted-foreground">
         An unexpected error occurred. Please try again.
       </p>
-      <button
-        onClick={reset}
-        className="mt-8 inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground hover:bg-primary/90 transition-colors"
-      >
+      <Button3D onClick={reset} className="mt-8">
         Try Again
-      </button>
+      </Button3D>
     </section>
   );
 }

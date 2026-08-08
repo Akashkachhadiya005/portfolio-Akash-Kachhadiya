@@ -6,6 +6,7 @@ import { Providers } from "@/components/Providers";
 import { JsonLd } from "@/components/JsonLd";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { HomeFab } from "@/components/ui/HomeFab";
 import { siteUrl } from "@/lib/site-url";
 import "./globals.css";
 
@@ -67,6 +68,7 @@ export default function RootLayout({
           <Navbar />
           <main className="flex-1 pt-16">{children}</main>
           <Footer />
+          <HomeFab />
         </Providers>
         <SpeedInsights />
         <Analytics />

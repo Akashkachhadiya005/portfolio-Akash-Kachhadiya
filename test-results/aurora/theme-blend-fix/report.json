@@ -1,0 +1,278 @@
+{
+  "label": "theme-blend-fix",
+  "url": "http://localhost:3131",
+  "at": "2026-08-08T13:08:30.530Z",
+  "captures": [
+    {
+      "name": "laptop-dark-centre-t7",
+      "viewport": "laptop",
+      "theme": "dark",
+      "pointer": "centre",
+      "frozenTime": 7,
+      "determinism": "css-paused",
+      "metrics": {
+        "width": 1440,
+        "height": 836,
+        "baseRatio": 0,
+        "blowoutRatio": 0,
+        "luminanceMean": 0.04764897471075428,
+        "luminanceStdDev": 0.07496254585619821,
+        "ridgeP95": 0.3072114210916136,
+        "ridgeP99": 0.9395083823201712,
+        "ridgeRatio": 0.028691520467836257,
+        "bandCrossings": 10.222222222222221,
+        "paletteFidelity": 2.363263946944396,
+        "offPaletteRatio": 0.00014619883040935673,
+        "shares": {
+          "deep": 0.9154306220095694,
+          "cyan": 0.06723817118553961,
+          "warm": 0.017331206804891017
+        },
+        "tealVsWarm": 0.982668793195109,
+        "coreCyanShare": 0.97953216374269,
+        "regionLum": {
+          "#hero h1|Akash Kachhadiya": {
+            "mean": 0.0288649603827498,
+            "max": 0.17835935950279236,
+            "p95": 0.05641838163137436
+          },
+          "#hero p|Hello, I'm": {
+            "mean": 0.05283495477430286,
+            "max": 0.40077143907546997,
+            "p95": 0.16418763995170593
+          },
+          "#hero p|Data Scientist": {
+            "mean": 0.027641268282427783,
+            "max": 0.14489158987998962,
+            "p95": 0.04743881896138191
+          },
+          "#hero p|Building intellige": {
+            "mean": 0.026466954341490885,
+            "max": 0.06927140802145004,
+            "p95": 0.042292430996894836
+          }
+        }
+      },
+      "minContrast": 3.337447746725624,
+      "contrasts": [
+        {
+          "block": "#hero h1|Akash Kachhadiya",
+          "ratio": 9.289890747521664,
+          "meanRatio": 12.535543466776087,
+          "maxRatio": 4.329207881104805
+        },
+        {
+          "block": "#hero p|Hello, I'm",
+          "ratio": 3.337447746725624,
+          "meanRatio": 6.951333405087756,
+          "maxRatio": 1.5858148817046476
+        },
+        {
+          "block": "#hero p|Data Scientist",
+          "ratio": 7.33629639555272,
+          "meanRatio": 9.206960063210184,
+          "maxRatio": 3.667885601289848
+        },
+        {
+          "block": "#hero p|Building intellige",
+          "ratio": 7.745381160859776,
+          "meanRatio": 9.348352664092294,
+          "maxRatio": 5.9933899347003745
+        }
+      ],
+      "violations": [
+        {
+          "key": "baseRatio",
+          "rule": {
+            "min": 0.3,
+            "max": 0.82
+          },
+          "actual": 0,
+          "why": "below min 0.3"
+        },
+        {
+          "key": "shares.warm",
+          "rule": {
+            "min": 0.03,
+            "max": 0.3
+          },
+          "actual": 0.017331206804891017,
+          "why": "below min 0.03"
+        },
+        {
+          "key": "textContrast",
+          "rule": {
+            "min": 4.5
+          },
+          "actual": 3.337447746725624,
+          "why": "below min 4.5"
+        }
+      ],
+      "dom": {
+        "hostMode": "live",
+        "hostClass": "aurora",
+        "coverage": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "overflowX": true
+      },
+      "zoom": {
+        "zoom100": true,
+        "zoom150": true,
+        "zoom200": true
+      },
+      "fps": {
+        "medianMs": 499.89999999999964,
+        "fps": 2.0004000800160044,
+        "frames": 7
+      }
+    },
+    {
+      "name": "laptop-light-centre-t7",
+      "viewport": "laptop",
+      "theme": "light",
+      "pointer": "centre",
+      "frozenTime": 7,
+      "determinism": "css-paused",
+      "metrics": {
+        "width": 1440,
+        "height": 836,
+        "baseRatio": 0.9963051568314726,
+        "blowoutRatio": 0,
+        "luminanceMean": 0.9627301126644253,
+        "luminanceStdDev": 0.05839667715735249,
+        "ridgeP95": 0.27684760443105544,
+        "ridgeP99": 0.5857007122645451,
+        "ridgeRatio": 0.0331140350877193,
+        "bandCrossings": 14,
+        "paletteFidelity": 10.318676810095857,
+        "offPaletteRatio": 0,
+        "shares": {
+          "deep": 0,
+          "cyan": 1,
+          "warm": 0
+        },
+        "tealVsWarm": 1,
+        "coreCyanShare": 1,
+        "regionLum": {
+          "#hero h1|Akash Kachhadiya": {
+            "mean": 0.9786921617779487,
+            "max": 0.9918498396873474,
+            "p95": 0.9899975061416626
+          },
+          "#hero p|Hello, I'm": {
+            "mean": 0.950232816198545,
+            "max": 0.9899975061416626,
+            "p95": 0.9899975061416626
+          },
+          "#hero p|Data Scientist": {
+            "mean": 0.9797157154901436,
+            "max": 0.9918498396873474,
+            "p95": 0.9899975061416626
+          },
+          "#hero p|Building intellige": {
+            "mean": 0.9848592604089174,
+            "max": 0.9924923181533813,
+            "p95": 0.9924923181533813
+          }
+        }
+      },
+      "minContrast": 7.421685482121721,
+      "contrasts": [
+        {
+          "block": "#hero h1|Akash Kachhadiya",
+          "ratio": 13.952830300188758,
+          "meanRatio": 13.801155367835017,
+          "maxRatio": 13.977681605571375
+        },
+        {
+          "block": "#hero p|Hello, I'm",
+          "ratio": 10.041319025805437,
+          "meanRatio": 9.657385472769887,
+          "maxRatio": 10.041319025805437
+        },
+        {
+          "block": "#hero p|Data Scientist",
+          "ratio": 10.041319025805437,
+          "meanRatio": 9.942046922287158,
+          "maxRatio": 10.059203561070746
+        },
+        {
+          "block": "#hero p|Building intellige",
+          "ratio": 7.421685482121721,
+          "meanRatio": 7.367344406547531,
+          "maxRatio": 7.421685482121721
+        }
+      ],
+      "violations": [
+        {
+          "key": "baseRatio",
+          "rule": {
+            "min": 0.35,
+            "max": 0.9
+          },
+          "actual": 0.9963051568314726,
+          "why": "above max 0.9"
+        },
+        {
+          "key": "luminanceStdDev",
+          "rule": {
+            "min": 0.07
+          },
+          "actual": 0.05839667715735249,
+          "why": "below min 0.07"
+        },
+        {
+          "key": "shares.warm",
+          "rule": {
+            "min": 0.03,
+            "max": 0.3
+          },
+          "actual": 0,
+          "why": "below min 0.03"
+        },
+        {
+          "key": "overflowX.zoom200",
+          "rule": {},
+          "actual": false,
+          "why": "horizontal overflow"
+        }
+      ],
+      "dom": {
+        "hostMode": "live",
+        "hostClass": "aurora",
+        "coverage": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "overflowX": true
+      },
+      "zoom": {
+        "zoom100": true,
+        "zoom150": true,
+        "zoom200": false
+      },
+      "fps": {
+        "medianMs": 516.7000000000007,
+        "fps": 1.9353590090961845,
+        "frames": 6
+      }
+    }
+  ],
+  "summary": {
+    "captures": 2,
+    "failing": 2,
+    "byThreshold": {
+      "baseRatio": 2,
+      "shares.warm": 2,
+      "textContrast": 1,
+      "luminanceStdDev": 1,
+      "overflowX.zoom200": 1
+    }
+  }
+}

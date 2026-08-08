@@ -6,7 +6,9 @@ export const skills: SkillGroup[] = [
     items: [
       "Large Language Models (LLMs)",
       "RAG (Retrieval-Augmented Generation)",
+      "RAGAS (RAG Evaluation)",
       "Prompt Engineering",
+      "Google Gemini",
       "AI Agents",
       "Multi-Agent Systems",
       "Custom AI Applications",
@@ -51,6 +53,7 @@ export const skills: SkillGroup[] = [
       "Serverless Architecture",
       "Cloud Infrastructure",
       "S3 / EC2 / IAM",
+      "Google Cloud (GCP)",
     ],
   },
   {
@@ -58,7 +61,6 @@ export const skills: SkillGroup[] = [
     items: [
       "Python",
       "SQL",
-      "Databricks",
       "Data Preprocessing",
       "EDA",
       "Statistical Analysis",
@@ -66,8 +68,11 @@ export const skills: SkillGroup[] = [
       "MongoDB",
     ],
   },
+  // Kept at exactly six categories on purpose: SkillsSection splits the desktop
+  // layout with skills.slice(0,3) and skills.slice(3,6), so a seventh group
+  // would silently vanish on desktop. New tools go into an existing group.
   {
-    category: "Tools & Libraries",
+    category: "Tools & Collaboration",
     items: [
       "PyTorch",
       "TensorFlow",
@@ -79,6 +84,12 @@ export const skills: SkillGroup[] = [
       "Git / GitHub",
       "Power BI",
       "Jupyter",
+      "Postman",
+      "Jira",
+      "Confluence",
+      "Slack",
+      "Microsoft Teams",
+      "Outlook",
     ],
   },
 ];

@@ -1,0 +1,343 @@
+{
+  "label": "control",
+  "url": "http://localhost:3131",
+  "at": "2026-08-08T10:28:39.018Z",
+  "captures": [
+    {
+      "name": "laptop-dark-centre-t7",
+      "viewport": "laptop",
+      "theme": "dark",
+      "pointer": "centre",
+      "frozenTime": 7,
+      "determinism": "css-paused",
+      "metrics": {
+        "width": 1440,
+        "height": 836,
+        "baseRatio": 0.4385067783094099,
+        "blowoutRatio": 0,
+        "luminanceMean": 0.02532043044440579,
+        "luminanceStdDev": 0.02350420911168336,
+        "ridgeP95": 0.007733009289950132,
+        "ridgeP99": 0.011581034399569035,
+        "ridgeRatio": 0.00002492025518341308,
+        "bandCrossings": 0.8888888888888888,
+        "paletteFidelity": 6.37693567912619,
+        "offPaletteRatio": 0,
+        "shares": {
+          "deep": 0.9876558551841266,
+          "cyan": 0,
+          "warm": 0.01234414481587341
+        },
+        "regionLum": {
+          "#hero h1|Akash Kachhadiya": {
+            "mean": 0.023692232232129542,
+            "max": 0.07863747328519821
+          },
+          "#hero p|Hello, I'm": {
+            "mean": 0.02298034191225602,
+            "max": 0.06955623626708984
+          },
+          "#hero p|AI/ML Engineer": {
+            "mean": 0.02131877045817972,
+            "max": 0.0764717385172844
+          },
+          "#hero p|Building intellige": {
+            "mean": 0.01712622731316688,
+            "max": 0.06305918097496033
+          },
+          "#hero .btn5-label|View Projects": {
+            "mean": 0.01250346586848372,
+            "max": 0.017316976562142372
+          },
+          "#hero .btn5-label|Contact": {
+            "mean": 0.008050559906764308,
+            "max": 0.009048392996191978
+          }
+        }
+      },
+      "minContrast": 2.7474614274646254,
+      "contrasts": [
+        {
+          "block": "#hero h1|Akash Kachhadiya",
+          "ratio": 7.6852810742924484,
+          "meanRatio": 13.415459254503373
+        },
+        {
+          "block": "#hero p|Hello, I'm",
+          "ratio": 2.9063830887446604,
+          "meanRatio": 4.761230409942451
+        },
+        {
+          "block": "#hero p|AI/ML Engineer",
+          "ratio": 2.7474614274646254,
+          "meanRatio": 4.8721566707937844
+        },
+        {
+          "block": "#hero p|Building intellige",
+          "ratio": 6.322706835207118,
+          "meanRatio": 10.649191604323688
+        },
+        {
+          "block": "#hero .btn5-label|View Projects",
+          "ratio": 15.59784847185929,
+          "meanRatio": 16.799068426210972
+        },
+        {
+          "block": "#hero .btn5-label|Contact",
+          "ratio": 16.7424562925411,
+          "meanRatio": 17.030242954957895
+        }
+      ],
+      "violations": [
+        {
+          "key": "luminanceStdDev",
+          "rule": {
+            "min": 0.07
+          },
+          "actual": 0.02350420911168336,
+          "why": "below min 0.07"
+        },
+        {
+          "key": "ridgeP95",
+          "rule": {
+            "min": 0.02
+          },
+          "actual": 0.007733009289950132,
+          "why": "below min 0.02"
+        },
+        {
+          "key": "ridgeRatio",
+          "rule": {
+            "min": 0.015
+          },
+          "actual": 0.00002492025518341308,
+          "why": "below min 0.015"
+        },
+        {
+          "key": "bandCrossings",
+          "rule": {
+            "min": 2.5
+          },
+          "actual": 0.8888888888888888,
+          "why": "below min 2.5"
+        },
+        {
+          "key": "shares.cyan",
+          "rule": {
+            "min": 0.4
+          },
+          "actual": 0,
+          "why": "below min 0.4"
+        },
+        {
+          "key": "shares.warm",
+          "rule": {
+            "min": 0.03,
+            "max": 0.3
+          },
+          "actual": 0.01234414481587341,
+          "why": "below min 0.03"
+        },
+        {
+          "key": "textContrast",
+          "rule": {
+            "min": 4.5
+          },
+          "actual": 2.7474614274646254,
+          "why": "below min 4.5"
+        },
+        {
+          "key": "overflowX.zoom200",
+          "rule": {},
+          "actual": false,
+          "why": "horizontal overflow"
+        }
+      ],
+      "dom": {
+        "hostMode": null,
+        "hostClass": "mesh",
+        "coverage": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "overflowX": true
+      },
+      "zoom": {
+        "zoom100": true,
+        "zoom150": true,
+        "zoom200": false
+      },
+      "fps": {
+        "medianMs": 583.2999999999997,
+        "fps": 1.714383679067376,
+        "frames": 5
+      }
+    },
+    {
+      "name": "laptop-light-centre-t7",
+      "viewport": "laptop",
+      "theme": "light",
+      "pointer": "centre",
+      "frozenTime": 7,
+      "determinism": "css-paused",
+      "metrics": {
+        "width": 1440,
+        "height": 836,
+        "baseRatio": 0.8821969696969697,
+        "blowoutRatio": 0,
+        "luminanceMean": 0.8496828274952385,
+        "luminanceStdDev": 0.06767351297664582,
+        "ridgeP95": 0.039139311760663986,
+        "ridgeP99": 0.052896738052368164,
+        "ridgeRatio": 0.05524239101541733,
+        "bandCrossings": 3.888888888888889,
+        "paletteFidelity": 10.9000697642088,
+        "offPaletteRatio": 0,
+        "shares": {
+          "deep": 0,
+          "cyan": 1,
+          "warm": 0
+        },
+        "regionLum": {
+          "#hero h1|Akash Kachhadiya": {
+            "mean": 0.8191656554598243,
+            "max": 0.8733498454093933
+          },
+          "#hero p|Hello, I'm": {
+            "mean": 0.8320049254467622,
+            "max": 0.8799542784690857
+          },
+          "#hero p|AI/ML Engineer": {
+            "mean": 0.8229042307311107,
+            "max": 0.8750091195106506
+          },
+          "#hero p|Building intellige": {
+            "mean": 0.8369156995876914,
+            "max": 0.8889518976211548
+          },
+          "#hero .btn5-label|View Projects": {
+            "mean": 0.834249065892254,
+            "max": 0.8602485656738281
+          },
+          "#hero .btn5-label|Contact": {
+            "mean": 0.8598265251251659,
+            "max": 0.8717877268791199
+          }
+        }
+      },
+      "minContrast": 1.153531067882231,
+      "contrasts": [
+        {
+          "block": "#hero h1|Akash Kachhadiya",
+          "ratio": 12.387860186799228,
+          "meanRatio": 11.660913436586014
+        },
+        {
+          "block": "#hero p|Hello, I'm",
+          "ratio": 2.6763105394554794,
+          "meanRatio": 2.538317347935385
+        },
+        {
+          "block": "#hero p|AI/ML Engineer",
+          "ratio": 2.662078892431359,
+          "meanRatio": 2.5121265063555596
+        },
+        {
+          "block": "#hero p|Building intellige",
+          "ratio": 6.684563085634438,
+          "meanRatio": 6.314108273867715
+        },
+        {
+          "block": "#hero .btn5-label|View Projects",
+          "ratio": 1.153531067882231,
+          "meanRatio": 1.1874482433752922
+        },
+        {
+          "block": "#hero .btn5-label|Contact",
+          "ratio": 12.366902468503781,
+          "meanRatio": 12.206428412293393
+        }
+      ],
+      "violations": [
+        {
+          "key": "baseRatio",
+          "rule": {
+            "min": 0.3,
+            "max": 0.8
+          },
+          "actual": 0.8821969696969697,
+          "why": "above max 0.8"
+        },
+        {
+          "key": "luminanceStdDev",
+          "rule": {
+            "min": 0.07
+          },
+          "actual": 0.06767351297664582,
+          "why": "below min 0.07"
+        },
+        {
+          "key": "shares.warm",
+          "rule": {
+            "min": 0.03,
+            "max": 0.3
+          },
+          "actual": 0,
+          "why": "below min 0.03"
+        },
+        {
+          "key": "textContrast",
+          "rule": {
+            "min": 4.5
+          },
+          "actual": 1.153531067882231,
+          "why": "below min 4.5"
+        },
+        {
+          "key": "overflowX.zoom200",
+          "rule": {},
+          "actual": false,
+          "why": "horizontal overflow"
+        }
+      ],
+      "dom": {
+        "hostMode": null,
+        "hostClass": "mesh",
+        "coverage": {
+          "left": 0,
+          "top": 0,
+          "right": 0,
+          "bottom": 0
+        },
+        "overflowX": true
+      },
+      "zoom": {
+        "zoom100": true,
+        "zoom150": true,
+        "zoom200": false
+      },
+      "fps": {
+        "medianMs": 516.6999999999998,
+        "fps": 1.935359009096188,
+        "frames": 6
+      }
+    }
+  ],
+  "summary": {
+    "captures": 2,
+    "failing": 2,
+    "byThreshold": {
+      "luminanceStdDev": 2,
+      "ridgeP95": 1,
+      "ridgeRatio": 1,
+      "bandCrossings": 1,
+      "shares.cyan": 1,
+      "shares.warm": 2,
+      "textContrast": 2,
+      "overflowX.zoom200": 2,
+      "baseRatio": 1
+    }
+  }
+}

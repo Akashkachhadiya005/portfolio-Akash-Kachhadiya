@@ -1,0 +1,85 @@
+"use client";
+
+import Image from "next/image";
+import { useCallback, useRef } from "react";
+
+/**
+ * Portrait in a frame that responds to the cursor.
+ *
+ * Same principle as Button3D, tuned for a large surface:
+ *  - the frame tilts in perspective toward the pointer
+ *  - a sheet-of-glass highlight sweeps across, tracking the pointer
+ *  - the photo sits deeper in Z than the frame edge, so the mount has real
+ *    thickness and the portrait parallaxes inside it
+ *  - a soft accent bloom sits behind the frame and drifts with the tilt
+ *
+ * The pointer handler writes CSS custom properties only, so all of this stays
+ * on the compositor: no layout, no paint, no React state, no re-render.
+ *
+ * `object-contain` is deliberate. The source is 1200x1600; cropping it square
+ * cut the head off, so the frame carries the 3:4 ratio and the whole photo shows.
+ */
+
+const MAX_TILT_DEG = 7;
+
+export function PhotoFrame() {
+  const ref = useRef<HTMLDivElement | null>(null);
+
+  const onPointerMove = useCallback((e: React.PointerEvent) => {
+    const el = ref.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    const nx = (e.clientX - r.left) / r.width - 0.5;
+    const ny = (e.clientY - r.top) / r.height - 0.5;
+    el.style.setProperty("--ry", `${(nx * 2 * MAX_TILT_DEG).toFixed(2)}deg`);
+    el.style.setProperty("--rx", `${(-ny * 2 * MAX_TILT_DEG).toFixed(2)}deg`);
+    el.style.setProperty(
+      "--px",
+      `${(((e.clientX - r.left) / r.width) * 100).toFixed(1)}%`,
+    );
+    el.style.setProperty(
+      "--py",
+      `${(((e.clientY - r.top) / r.height) * 100).toFixed(1)}%`,
+    );
+  }, []);
+
+  const onPointerLeave = useCallback(() => {
+    const el = ref.current;
+    if (!el) return;
+    el.style.setProperty("--rx", "0deg");
+    el.style.setProperty("--ry", "0deg");
+    el.dataset.settling = "1";
+    window.setTimeout(() => {
+      if (el.dataset.settling === "1") delete el.dataset.settling;
+    }, 500);
+  }, []);
+
+  const setRef = useCallback((node: HTMLDivElement | null) => {
+    ref.current = node;
+  }, []);
+
+  return (
+    <div className="photo-frame-wrap self-center lg:self-stretch">
+      <div
+        ref={setRef}
+        onPointerMove={onPointerMove}
+        onPointerLeave={onPointerLeave}
+        className="photo-frame"
+      >
+        <div className="photo-frame-inner">
+          <Image
+            src="/images/akash.jpg"
+            alt="Akash Kachhadiya"
+            width={1200}
+            height={1600}
+            sizes="(max-width: 1024px) 280px, 380px"
+            priority={false}
+            className="photo-frame-img"
+          />
+        </div>
+        <span className="photo-frame-sheen" aria-hidden="true" />
+        <span className="photo-frame-rim" aria-hidden="true" />
+      </div>
+    </div>
+  );
+}

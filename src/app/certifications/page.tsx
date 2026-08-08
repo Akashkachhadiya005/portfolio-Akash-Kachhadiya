@@ -14,8 +14,8 @@ export default function CertificationsPage() {
   const otherCerts = certifications.filter((c) => c.category === "Analytics");
 
   return (
-    <section className="px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
-      <div className="mx-auto max-w-6xl">
+    <section className="py-20 sm:py-28">
+      <div className="page-shell-narrow">
         <h1 className="text-3xl font-bold sm:text-4xl">Certifications</h1>
         <p className="mt-2 max-w-2xl text-muted-foreground">
           Verified professional credentials from AWS, IABAC, NASSCOM, and Microsoft.
@@ -81,8 +81,7 @@ function CertCard({ cert }: { cert: (typeof certifications)[number] }) {
         )}
         {cert.credentialId && (
           <p>
-            <span className="font-medium text-foreground">ID:</span>{" "}
-            {cert.credentialId}
+            <span className="font-medium text-foreground">ID:</span> {cert.credentialId}
           </p>
         )}
       </div>

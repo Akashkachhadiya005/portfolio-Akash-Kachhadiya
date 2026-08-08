@@ -7,26 +7,28 @@ import { projects } from "@/data/projects";
 import { ProjectCard } from "@/components/ui/ProjectCard";
 
 export function ProjectsSection() {
-  const featured = projects.filter((p) => p.featured);
+  // Show every project, not just `featured`. Only 3 of the 4 were flagged, so a
+  // wide screen with room for 4+ columns still rendered 3 cards and left a gap
+  // on the right. The card grid decides how many fit; the data should not.
+  const featured = projects;
 
   return (
-    <section id="projects" className="px-4 py-20 sm:px-6 sm:py-28 lg:px-8">
-      <div className="mx-auto max-w-6xl">
+    <section id="projects" className="py-20 sm:py-28">
+      <div className="page-shell-narrow">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.5 }}
+          className="text-center"
         >
           <h2 className="text-sm font-medium uppercase tracking-widest text-accent">
             Projects
           </h2>
-          <p className="mt-2 text-3xl font-bold sm:text-4xl">
-            What I&apos;ve Built
-          </p>
+          <p className="mt-2 text-3xl font-bold sm:text-4xl">What I&apos;ve Built</p>
         </motion.div>
 
-        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="card-grid mt-10">
           {featured.map((project, i) => (
             <motion.div
               key={project.slug}
