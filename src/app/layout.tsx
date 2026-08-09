@@ -62,6 +62,22 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
+      <head>
+        {/* EVERY VISIT STARTS ON THE DEVICE THEME.
+         *
+         * next-themes persists the last choice in localStorage and restores it on
+         * load, so a visitor who once picked light stayed on light forever, even
+         * after their phone switched to dark. Clearing the key here — before the
+         * next-themes bootstrap script reads it — makes `defaultTheme="system"`
+         * take effect on every load, while still letting the visitor override it
+         * for the rest of the session. This must be inline and in <head> so it
+         * runs first; anything in an effect would be too late. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{localStorage.removeItem('theme')}catch(e){}`,
+          }}
+        />
+      </head>
       <body className="min-h-full flex flex-col bg-background text-foreground font-sans">
         <JsonLd />
         <Providers>

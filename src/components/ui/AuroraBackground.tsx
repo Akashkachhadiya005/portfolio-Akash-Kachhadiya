@@ -132,8 +132,9 @@ export function AuroraBackground({ className, intensity = 1 }: AuroraBackgroundP
     // outside the viewport. Pausing here preserves the exact visible effect and
     // removes its GPU cost while visitors scroll through lower sections.
     let isNearViewport = true;
+    let isScrolling = false;
     const syncLoop = () => {
-      if (document.hidden || !isNearViewport) renderer.stop();
+      if (document.hidden || !isNearViewport || isScrolling) renderer.stop();
       else renderer.start();
     };
     const intersectionObserver = new IntersectionObserver(
@@ -160,6 +161,31 @@ export function AuroraBackground({ className, intensity = 1 }: AuroraBackgroundP
       syncLoop();
     };
     document.addEventListener("visibilitychange", onVisibility);
+
+    /* PAUSED WHILE THE PAGE IS BEING SCROLLED.
+     *
+     * A full-screen fragment shader is the most expensive thing on this page, and
+     * scrolling is precisely the moment every frame matters. The field drifts so
+     * slowly that holding it still for the length of a flick is not perceptible —
+     * but the frames it gives back are. This is what keeps the hero smooth on a
+     * device with a weak GPU, where the shader is the difference between a
+     * comfortable scroll and a stuttering one.
+     *
+     * The listener is passive so it can never delay the scroll itself, and it does
+     * no work beyond setting a flag and arming a timer. */
+    let idleTimer = 0;
+    const onScroll = () => {
+      if (!isScrolling) {
+        isScrolling = true;
+        renderer.stop();
+      }
+      window.clearTimeout(idleTimer);
+      idleTimer = window.setTimeout(() => {
+        isScrolling = false;
+        syncLoop();
+      }, 180);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
 
     // Losing the context is normal on mobile after a background/foreground cycle.
     // Fall back rather than showing a blank hero.
@@ -198,6 +224,8 @@ export function AuroraBackground({ className, intensity = 1 }: AuroraBackgroundP
       ro.disconnect();
       intersectionObserver.disconnect();
       themeObserver.disconnect();
+      window.clearTimeout(idleTimer);
+      window.removeEventListener("scroll", onScroll);
       document.removeEventListener("visibilitychange", onVisibility);
       canvas.removeEventListener("webglcontextlost", onLost);
       canvas.removeEventListener("webglcontextrestored", onRestored);

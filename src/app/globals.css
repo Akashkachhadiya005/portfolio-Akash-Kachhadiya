@@ -102,6 +102,18 @@
 }
 
 /* ---------- BASE STYLES ---------- */
+/* NO background-color TRANSITION HERE — it was tried and removed.
+ *
+ * Easing the base colour looks right on paper and stalls in practice: a
+ * background-color transition on a full-viewport element repaints the entire
+ * viewport on every frame for its whole duration, and it finished exactly as the
+ * mode-change effect finished, which is why the effect appeared to catch right at
+ * the end. The gradual colour settle is done with an opacity fade on one layer
+ * instead — see .theme-iris-tint. Opacity is composited; colour is not. */
+html {
+  background-color: var(--background);
+}
+
 body {
   background-color: var(--background);
   color: var(--foreground);
@@ -268,10 +280,18 @@ body {
   transform-style: preserve-3d;
   transform: perspective(680px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg))
     translate3d(0, 0, 0);
-  /* Short enough that the surface feels attached to the cursor rather than
-     chasing it. Transform only — the compositor never repaints for this. */
-  transition: transform 90ms linear;
-  will-change: transform;
+  /* NO transition while tracking the cursor.
+     
+     There was a 90ms one here, and that is exactly what "the effect runs behind
+     the cursor" was: every pointer move started a fresh 90ms interpolation, so the
+     surface was always aiming at where the cursor had been. Tracking must be
+     immediate — the pointer IS the animation. The graceful part is handled by
+     [data-settling], which springs the surface back to flat once the pointer
+     leaves, which is the only moment easing belongs here.
+     
+     No `will-change` either: half a dozen of these plus the footer's dots, and
+     this codebase has measured that many standing promoted layers are a cost of
+     their own. */
 }
 
 /* The bar. Deliberately close to a single flat tone: all the modelling lives in
@@ -340,9 +360,21 @@ body {
      transform on .btn5, which the compositor handles without paint. */
 }
 
-/* Pointer has left: ease back to flat instead of snapping */
+/* Pointer has left: ease back to flat instead of snapping. This is the ONLY
+   transform transition on the button, and it exists for exactly one moment. */
 .btn5[data-settling="1"] {
   transition: transform 420ms cubic-bezier(0.22, 1.2, 0.3, 1);
+}
+
+/* The lift and press ride their own properties, so they ease without ever
+   touching the cursor-tracking transform. */
+.btn5 {
+  /* Above the theme light at z-index 1, so the sweep passes behind every button
+     on the site rather than across it. */
+  z-index: 4;
+  transition:
+    translate 160ms cubic-bezier(0.25, 0.9, 0.3, 1),
+    scale 160ms cubic-bezier(0.25, 0.9, 0.3, 1);
 }
 
 /* THE LIFT LIVES ON THE BUTTON, NOT ON THE BAR LAYER.
@@ -352,9 +384,13 @@ body {
    slab moved and the lettering held still. Moulded text cannot do that. Moving
    the transform up to .btn5 means the bar, the lettering and the icon are one
    rigid object through every hover, tilt and press. */
+/* The lift uses `translate`, which is an INDEPENDENT property from `transform`.
+   That is the whole trick: the tilt can track the cursor with no transition at all
+   while the lift still eases, because they are two different properties animating
+   on their own terms. Putting both in one transform string forced a single
+   transition, and that transition is what made the surface trail the pointer. */
 .btn5:hover {
-  transform: perspective(680px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg))
-    translate3d(0, -1.5px, 0);
+  translate: 0 -1.5px;
 }
 
 /* The bar layer only changes its shading on hover — never its position.
@@ -375,10 +411,11 @@ body {
     0 22px 34px -14px rgb(0 0 0 / 0.36);
 }
 
-/* Set back down: the bar settles and the contact shadow tightens under it. */
+/* Set back down. Independent properties again, so the press is instant and the
+   tilt underneath it is untouched. */
 .btn5:active {
-  transform: perspective(680px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg))
-    translate3d(0, 2px, 0) scale(0.992);
+  translate: 0 2px;
+  scale: 0.992;
 }
 
 .btn5:active .btn5-body {
@@ -742,8 +779,11 @@ body {
     inset 0 2px 4px rgb(0 0 0 / 0.26),
     inset 0 -1px 0 rgb(255 255 255 / 0.24),
     0 1px 0 rgb(255 255 255 / 0.1);
-  backdrop-filter: blur(6px) saturate(1.2);
-  -webkit-backdrop-filter: blur(6px) saturate(1.2);
+  /* No backdrop-filter. This control lives inside the FIXED navbar, so a blur
+     here has to be recomputed against whatever is scrolling underneath it — on
+     every scrolled frame, for the life of the page. The recessed channel is
+     described by its own gradient and inset shadows instead, which cost nothing
+     once painted. */
 }
 
 .theme-pill-thumb {
@@ -778,6 +818,9 @@ body {
   /* Overshoot easing is what gives the thumb mass — it arrives, then settles */
   translate: calc(var(--seg, 0) * 100%) 0;
   transition: translate 460ms cubic-bezier(0.34, 1.5, 0.42, 1);
+  /* Promoted so the slide is a compositor animation and the palette repaint
+     happening beside it cannot eat its frames. */
+  will-change: translate;
 }
 
 /* One-shot ring pulse as the thumb seats, so the change is felt, not just seen */
@@ -843,6 +886,66 @@ body {
   }
 }
 
+/* ============================================================
+   TOUCH PARITY
+
+   Every surface on this site expresses itself through :hover, and a phone has no
+   hover. Chromium and Safari do synthesise one after a tap, but it arrives when
+   the finger LIFTS and then sticks until the next tap somewhere else — which is
+   why effects on a phone felt absent, then late, then stuck.
+
+   On any device whose primary pointer cannot hover, the hover state is remapped
+   onto :active, so contact drives the effect and lifting ends it. Nothing is
+   added or removed visually; the same rules simply fire from touch.
+   ============================================================ */
+@media (hover: none) {
+  .btn5:active {
+    translate: 0 -1.5px;
+    scale: 1;
+  }
+  .btn5:active::before {
+    opacity: 1;
+  }
+  .btn5:active .btn5-trace {
+    opacity: 1;
+  }
+  .btn5:active .btn5-trace::before {
+    animation-play-state: running;
+  }
+
+  .cert-badge:active .cert-badge-plate {
+    scale: 1.09;
+  }
+  .cert-badge:active .cert-badge-plate::before {
+    opacity: 1;
+  }
+  .cert-badge:active .cert-badge-glass,
+  .cert-badge:active .cert-badge-edge {
+    opacity: 1;
+  }
+
+  .photo-frame:active .photo-frame-sheen {
+    opacity: 1;
+  }
+  .photo-frame:active .photo-frame-rim::before,
+  .photo-frame:active .photo-frame-rim::after {
+    opacity: 0.95;
+    width: 2.6rem;
+    height: 2.6rem;
+  }
+  .photo-frame:active .photo-frame-img {
+    filter: saturate(1.06) contrast(1.03);
+  }
+  .photo-frame-wrap:active::before {
+    opacity: 1;
+  }
+
+  .social-dot:active {
+    color: var(--foreground);
+    border-color: color-mix(in srgb, var(--accent) 60%, transparent);
+  }
+}
+
 /* Keyboard focus must stay obvious on every one of these */
 .btn-3d:focus-visible,
 .btn-3d-neutral:focus-visible,
@@ -863,118 +966,267 @@ body {
   }
 }
 
-/* Localised theme response. One small fixed layer animates transform/opacity;
-   no full-page snapshot, opacity, blur, or WebGL capture is involved. */
-.theme-switch-pulse {
-  --pulse-x: 50vw;
-  --pulse-y: 2rem;
+/* ============================================================
+   AURORA IRIS — the mode change.
+
+   A luminous ring expands out of the pressed button, trailing a translucent
+   aurora veil in the INCOMING theme's colours. The palette flips as the ring
+   crosses the middle of the screen (timed in ThemeToggle), so the change reads as
+   the ring converting the page — and the UI stays visible and legible throughout,
+   which the previous opaque wipe did not.
+
+   Colours are literal hex rather than tokens on purpose: while this paints, the
+   tokens still hold the OUTGOING theme. This layer has to describe the
+   destination, not the present.
+
+   Both children animate `transform` and `opacity` only. No paint, no layout, and
+   nothing that scales with the size of the page.
+   ============================================================ */
+.theme-iris {
   position: fixed;
-  z-index: 100;
-  left: var(--pulse-x);
-  top: var(--pulse-y);
-  width: 11rem;
-  aspect-ratio: 1;
-  border-radius: 50%;
+  inset: 0;
+  /* BEHIND the interface. z-index 1 puts it above every section's own background
+     but beneath anything that establishes a stacking position of its own — which
+     is why .hero-copy, .photo-frame-wrap, .cert-badge and .btn5 are all given a
+     z-index below. The light passes behind the logo, the portrait and the buttons
+     rather than washing over them.
+     
+     Being honest about the limit: a section painted with a fully opaque background
+     will hide any layer placed behind it. That is why the light is at 1 rather
+     than -1 — at -1 it would be invisible everywhere except the hero. */
+  z-index: 1;
   pointer-events: none;
   contain: strict;
-  translate: -50% -50%;
-  background: radial-gradient(
-    circle,
-    color-mix(in srgb, var(--primary) 34%, transparent) 0%,
-    color-mix(in srgb, var(--accent) 20%, transparent) 36%,
-    transparent 70%
-  );
-  box-shadow:
-    inset 0 0 0 1px color-mix(in srgb, var(--accent) 45%, transparent),
-    0 0 34px color-mix(in srgb, var(--primary) 28%, transparent);
-  animation: theme-switch-local-pulse 520ms cubic-bezier(0.2, 0.76, 0.3, 1) forwards;
+  overflow: hidden;
 }
 
-@keyframes theme-switch-local-pulse {
-  0% {
+/* ---- the tint: the OUTGOING background colour, held over the newly themed page
+        and faded away. This is what makes the palette settle gradually.
+        
+        It is invisible until the flip frame (the keyframes hold it at 0), then
+        appears at partial strength and clears. Partial, so the interface stays
+        readable; opacity, so the whole settle is one composited fade with no
+        repaint — which is the difference between this and the background-color
+        transition it replaced. */
+.theme-iris-tint {
+  position: absolute;
+  inset: 0;
+  background-color: var(--iris-from, transparent);
+  opacity: 0;
+  will-change: opacity;
+}
+
+.theme-iris-run .theme-iris-tint {
+  animation: theme-iris-tint 820ms linear forwards;
+}
+
+/* Lighter than it was (0.72): the point is a soft settle, not a dimmed page.
+   Holds at zero until the flip frame at 39% of 820ms ≈ 320ms. */
+@keyframes theme-iris-tint {
+  0%,
+  38% {
     opacity: 0;
-    transform: scale(0.2);
   }
-  30% {
-    opacity: 0.88;
+  40% {
+    opacity: 0.38;
   }
   100% {
     opacity: 0;
-    transform: scale(1.65);
+  }
+}
+
+/* Shared geometry: a fixed 320px circle centred on the origin, scaled up to reach
+   the furthest corner. Fixed base size is the performance rule — the GPU stretches
+   one small painted texture, so the cost is the same on a phone and on a 4K
+   display. Circle-from-origin is the correctness rule: it reaches every corner on
+   any aspect ratio, which a tilted band does not. */
+.theme-iris-veil,
+.theme-iris-ring,
+.theme-iris-rays {
+  position: absolute;
+  left: var(--ix);
+  top: var(--iy);
+  width: 320px;
+  height: 320px;
+  margin: -160px 0 0 -160px;
+  border-radius: 50%;
+  transform: scale(0);
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+/* ---- the rays: the depth cue. Soft spokes converging on the origin, masked so
+        they fade in at the core and out at the rim, and counter-rotating as they
+        expand so the shaft of light appears to turn. */
+.theme-iris-rays {
+  -webkit-mask-image: radial-gradient(
+    circle closest-side,
+    transparent 6%,
+    #000 34%,
+    #000 82%,
+    transparent 100%
+  );
+  mask-image: radial-gradient(
+    circle closest-side,
+    transparent 6%,
+    #000 34%,
+    #000 82%,
+    transparent 100%
+  );
+}
+
+.theme-iris[data-to="dark"] .theme-iris-rays {
+  background: repeating-conic-gradient(
+    from 0deg,
+    rgb(15 164 175 / 0.34) 0deg 7deg,
+    rgb(175 221 229 / 0.14) 7deg 13deg,
+    rgb(0 49 53 / 0) 13deg 30deg
+  );
+}
+
+.theme-iris[data-to="light"] .theme-iris-rays {
+  background: repeating-conic-gradient(
+    from 0deg,
+    rgb(175 221 229 / 0.44) 0deg 7deg,
+    rgb(15 164 175 / 0.16) 7deg 13deg,
+    rgb(255 255 255 / 0) 13deg 30deg
+  );
+}
+
+/* ---- the dome: the incoming theme's own colour, brightest at the rim so it reads
+        as a swelling volume of light rather than a flat disc. */
+.theme-iris[data-to="dark"] .theme-iris-veil {
+  /* #003135 → #024950 → a breath of #0FA4AF. The dark palette, nothing else. */
+  background: radial-gradient(
+    circle closest-side,
+    rgb(0 49 53 / 0.22) 0%,
+    rgb(0 49 53 / 0.4) 46%,
+    rgb(2 73 80 / 0.52) 76%,
+    rgb(15 164 175 / 0.28) 94%,
+    rgb(15 164 175 / 0) 100%
+  );
+}
+
+.theme-iris[data-to="light"] .theme-iris-veil {
+  /* #FAFFFE → #E8F6F8 → a breath of #AFDDE5. The light palette, nothing else. */
+  background: radial-gradient(
+    circle closest-side,
+    rgb(250 255 254 / 0.3) 0%,
+    rgb(250 255 254 / 0.48) 46%,
+    rgb(232 246 248 / 0.6) 76%,
+    rgb(175 221 229 / 0.38) 94%,
+    rgb(175 221 229 / 0) 100%
+  );
+}
+
+/* ---- the wavefront: a thin bright annulus running just ahead of the dome. */
+.theme-iris[data-to="dark"] .theme-iris-ring {
+  background: radial-gradient(
+    circle closest-side,
+    transparent 0%,
+    transparent 72%,
+    rgb(15 164 175 / 0.45) 86%,
+    rgb(175 221 229 / 0.95) 94%,
+    rgb(15 164 175 / 0.2) 99%,
+    transparent 100%
+  );
+}
+
+.theme-iris[data-to="light"] .theme-iris-ring {
+  background: radial-gradient(
+    circle closest-side,
+    transparent 0%,
+    transparent 72%,
+    rgb(175 221 229 / 0.6) 86%,
+    rgb(15 164 175 / 0.62) 94%,
+    rgb(175 221 229 / 0.22) 99%,
+    transparent 100%
+  );
+}
+
+/* Three staggered expansions. The wavefront leads, the dome follows, the rays
+   trail and rotate — that separation in time is what reads as depth. */
+.theme-iris-run .theme-iris-rays {
+  animation: theme-iris-rays 820ms cubic-bezier(0.16, 0.72, 0.16, 1) forwards;
+}
+
+.theme-iris-run .theme-iris-veil {
+  animation: theme-iris-veil 820ms cubic-bezier(0.18, 0.74, 0.16, 1) forwards;
+}
+
+.theme-iris-run .theme-iris-ring {
+  animation: theme-iris-ring 820ms cubic-bezier(0.12, 0.8, 0.14, 1) forwards;
+}
+
+@keyframes theme-iris-rays {
+  0% {
+    transform: scale(0) rotate(-14deg);
+    opacity: 0;
+  }
+  16% {
+    opacity: 0.9;
+  }
+  70% {
+    opacity: 0.55;
+  }
+  100% {
+    transform: scale(calc(var(--is) * 1.08)) rotate(16deg);
+    opacity: 0;
+  }
+}
+
+@keyframes theme-iris-veil {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  14% {
+    opacity: 1;
+  }
+  72% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(var(--is));
+    opacity: 0;
+  }
+}
+
+@keyframes theme-iris-ring {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  9% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 0.95;
+  }
+  100% {
+    transform: scale(calc(var(--is) * 1.05));
+    opacity: 0;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .theme-switch-pulse {
+  .theme-iris {
     display: none;
   }
 }
 
-/* ============================================================
-   LEGACY VIEW-TRANSITION FALLBACK (not used by the live theme control)
-
-   There used to be a `*` transition on background-color/border-color/color
-   here. Switching theme changes the palette variables, so EVERY element and
-   pseudo-element on the page animated at once — thousands of repaints per frame
-   for 200ms. That was the stall when toggling dark/light. It also leaked a 200ms
-   colour lag into every hover on the site.
-
-   Replaced by the View Transitions API: the browser snapshots the old and new
-   page as textures and animates between them on the compositor, so the cost is
-   one composited crossfade regardless of how many elements changed. The reveal
-   is a circle expanding from the toggle that was pressed (see ThemeToggle,
-   which sets --tx/--ty/--tr).
-
-   Browsers without View Transitions simply switch instantly — still better than
-   the stall it replaced.
-   ============================================================ */
-::view-transition-old(root),
-::view-transition-new(root) {
-  /* Kill the default crossfade so the clip-path reveal is the only motion */
-  animation: none;
-  mix-blend-mode: normal;
-}
-
-::view-transition-old(root) {
-  z-index: 1;
-}
-
-::view-transition-new(root) {
-  z-index: 2;
-}
-
-/* WebGL canvas snapshots can produce black contour artefacts while the root
-   reveal mixes old and new themes. Capture the aurora separately and swap its
-   new frame immediately; the rest of the UI keeps the circular reveal. */
-::view-transition-group(aurora-background),
-::view-transition-old(aurora-background),
-::view-transition-new(aurora-background) {
-  animation: none !important;
-  mix-blend-mode: normal;
-}
-
-::view-transition-old(aurora-background) {
-  opacity: 0;
-}
-
-html[data-theme-reveal="1"]::view-transition-new(root) {
-  animation: theme-reveal 560ms cubic-bezier(0.22, 0.75, 0.25, 1);
-}
-
-@keyframes theme-reveal {
-  from {
-    clip-path: circle(0 at var(--tx, 50%) var(--ty, 50%));
-  }
-  to {
-    clip-path: circle(var(--tr, 150vmax) at var(--tx, 50%) var(--ty, 50%));
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  html[data-theme-reveal="1"]::view-transition-new(root) {
-    animation: none;
-  }
-}
+/* WHY THERE IS NO `*` COLOUR TRANSITION HERE.
+   
+   There used to be one, on background-color/border-color/color. Switching theme
+   changes the palette variables, so every element and pseudo-element on the page
+   animated at once — thousands of repaints per frame for 200ms. That was the
+   original stall, and it also leaked a 200ms colour lag into every hover.
+   
+   The View Transitions API replaced it, and was itself removed: snapshotting the
+   document captured the hero's WebGL canvas into a stale texture, which is what
+   produced the black contour artefacts during dark → light. The theme change is
+   now a single instant flip, timed to land under the travelling ring — see
+   .theme-iris below. */
 
 /* Colour transitions kept ONLY on things the user actually interacts with, so
    hover still feels smooth without putting the whole document on a timer. */
@@ -1219,7 +1471,7 @@ select,
      a listener of its own. */
   transform: perspective(700px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg))
     translateZ(0);
-  transition: transform 110ms linear;
+  /* Tracking is immediate; only the release eases. See the note on .btn5. */
 }
 
 /* Pointer gone: relax to flat on a spring rather than snapping */
@@ -1251,15 +1503,19 @@ select,
     color-mix(in srgb, var(--accent) 22%, transparent) 45%,
     transparent 74%
   );
-  will-change: opacity;
+}
+
+/* The zoom rides the independent `scale` property, so it eases at the same 140ms
+   as the glow while the tilt keeps tracking the cursor with no transition at all.
+   Previously both shared one transform, which meant every pointer move restarted
+   the 140ms interpolation — the badge was always chasing the cursor. */
+.cert-badge-plate {
+  scale: 1;
+  transition: scale 140ms cubic-bezier(0.3, 0.9, 0.4, 1);
 }
 
 .cert-badge:hover .cert-badge-plate {
-  transform: perspective(700px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg))
-    translateZ(22px) scale(1.09);
-  /* Matches the glow's 140ms, so zoom and light are one motion. Pointer tracking
-     keeps its own faster 110ms in the base rule. */
-  transition: transform 140ms cubic-bezier(0.3, 0.9, 0.4, 1);
+  scale: 1.09;
 }
 
 .cert-badge:hover .cert-badge-plate::before {
@@ -1470,10 +1726,10 @@ select,
     0 40px 70px -28px rgb(0 0 0 / 0.48);
 
   transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
-  /* Transform only. The frame's six shadow layers cover a large area, so
-     interpolating them was one of the heaviest repaints on the page. */
-  transition: transform 110ms linear;
-  will-change: transform;
+  /* No tracking transition — the frame follows the pointer frame for frame. Only
+     the release eases, via [data-settling]. The shadow layers are never
+     interpolated either: on a surface this large that was the heaviest repaint on
+     the page. */
 }
 
 .photo-frame[data-settling="1"] {
@@ -1842,11 +2098,12 @@ select,
     inset 0 1px 0 rgb(255 255 255 / 0.4),
     0 2px 0 -1px var(--border),
     0 8px 16px -8px rgb(0 0 0 / 0.3);
+  /* No box-shadow transition: six of these sit in the footer, and interpolating
+     their shadows repainted that whole strip on hover and during scroll. */
   transition:
     transform 200ms cubic-bezier(0.22, 1.1, 0.3, 1),
     color 200ms ease,
-    border-color 200ms ease,
-    box-shadow 200ms ease;
+    border-color 200ms ease;
 }
 
 .social-dot:hover {
@@ -1920,10 +2177,13 @@ select,
   transform: translateX(-50%) translateY(140%) scale(0.8);
   opacity: 0;
   pointer-events: none;
+  /* This element is FIXED and visible for most of the page. A transitioning
+     box-shadow on a fixed layer repaints on every scrolled frame, which is why
+     the area around the contact form and footer stuttered worst. */
   transition:
     transform 420ms cubic-bezier(0.22, 1.3, 0.35, 1),
-    opacity 300ms ease,
-    box-shadow 300ms ease;
+    opacity 300ms ease;
+  will-change: transform, opacity;
 }
 
 .home-fab[data-visible="1"] {
@@ -2028,9 +2288,10 @@ select,
   box-shadow:
     inset 0 1px 3px rgb(0 0 0 / 0.14),
     inset 0 1px 0 rgb(255 255 255 / 0.16);
+  /* Focus ring switches instantly rather than interpolating a shadow on a large
+     textarea — the focus response reads sharper for it. */
   transition:
     border-color 200ms ease,
-    box-shadow 200ms ease,
     background-color 200ms ease;
 }
 
@@ -2199,6 +2460,16 @@ select,
   animation-play-state: paused;
 }
 
+/* The 28 skill tiles are promoted ONLY while the physics loop is actually moving
+   them. `will-change: transform` used to sit on them permanently, which meant 28
+   standing compositor layers for the whole life of the page — and this codebase
+   has already measured that many promoted layers are a cost in themselves. While
+   the section is offscreen or the page is being scrolled, the tiles are static, so
+   they need no promotion at all. */
+[data-skill-active="true"] .skill-tile {
+  will-change: transform;
+}
+
 /* Same idea for the experience rail: its packet and read-head loops are infinite,
    so they are paused while the section is out of view. */
 [data-rail-live="false"] .timeline-flow,
@@ -2261,6 +2532,15 @@ select,
    One static, non-animated layer: costs a single composite and nothing per frame. */
 /* Keep copy legible even when a bright fold crosses the centre. Static text
    shadows cost no animation frame and preserve the aurora at the edges. */
+/* Everything that must stay ABOVE the theme light (which sits at z-index 1).
+   The buttons already carry position: relative; these need it stated. */
+.hero-copy,
+.photo-frame-wrap,
+.cert-badge {
+  position: relative;
+  z-index: 4;
+}
+
 .hero-copy {
   isolation: isolate;
 }

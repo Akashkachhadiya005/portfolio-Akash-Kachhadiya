@@ -272,6 +272,9 @@ function NetworkScene({
   const projRef = useRef<Projection>({ camZ: 7, halfTan: 0.4663, halfH: 200 });
   const seededRef = useRef(false);
   const [hovered, setHovered] = useState<number | null>(null);
+  /** True while the current grab came from a finger or pen rather than a mouse.
+   *  Touch has no "leave" event, so the name label has to be dismissed on lift. */
+  const touchGrabRef = useRef(false);
 
   // Per-frame scratch buffers — screen-space metrics for every node.
   // Allocated once; the render loop must never allocate.
@@ -402,6 +405,13 @@ function NetworkScene({
       document.body.style.cursor = "grabbing";
       nodesRef.current[index].vel.set(0, 0, 0);
       onGrab(index);
+
+      // The name label used to be driven purely by onMouseEnter. Touch browsers
+      // synthesise mouseenter only AFTER the tap finishes, which is why the name
+      // appeared on release instead of on contact. Pointerdown fires for finger,
+      // pen and mouse alike, so naming it here makes the label instant on touch.
+      setHovered(index);
+      touchGrabRef.current = e.pointerType !== "mouse";
     },
     [onGrab],
   );
@@ -443,6 +453,13 @@ function NetworkScene({
         }
       }
       dragRef.current = null;
+
+      // A finger has no pointerleave, so the label would otherwise stay on
+      // screen after the tap. A mouse keeps it until the cursor actually leaves.
+      if (touchGrabRef.current) {
+        touchGrabRef.current = false;
+        setHovered(null);
+      }
     }
     window.addEventListener("pointermove", onMove);
     window.addEventListener("pointerup", onUp);
@@ -751,14 +768,12 @@ function NetworkScene({
               ref={(el) => {
                 tileRefs.current[i] = el;
               }}
-              className="group relative flex cursor-grab select-none items-center justify-center rounded-full active:cursor-grabbing"
+              className="skill-tile group relative flex cursor-grab select-none items-center justify-center rounded-full active:cursor-grabbing"
               style={{
                 width: tilePx,
                 height: tilePx,
                 touchAction: "none",
                 userSelect: "none",
-                willChange: "transform",
-                transition: "box-shadow 0.3s",
               }}
               onPointerDown={(e) => startDrag(i, e)}
               onDragStart={(e) => e.preventDefault()}
@@ -768,7 +783,10 @@ function NetworkScene({
             >
               {/* Tile surface and ink are theme-independent by design — see the
                   --node-surface comment in globals.css. */}
-              <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-full border border-accent/50 bg-node-surface p-2 shadow-xl transition-all duration-200 group-hover:border-accent group-hover:shadow-2xl">
+              {/* transition-colors, not transition-all: `all` was interpolating
+                  the box-shadow on 28 tiles that are re-scaled every frame, which
+                  is a repaint per tile per frame. The border still lights up. */}
+              <div className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-full border border-accent/50 bg-node-surface p-2 shadow-xl transition-colors duration-200 group-hover:border-accent">
                 {!skill.logo ? (
                   /* Defensive fallback only — every node ships a mark today. */
                   <span className="pointer-events-none flex h-full w-full select-none items-center justify-center rounded-full text-center text-[8px] font-bold leading-tight text-node-ink">
@@ -845,6 +863,10 @@ export default function SkillNetwork() {
   // which only happens on resize / rotation, not per frame.
   const [tilePx, setTilePx] = useState(TILE_PX);
   const [isNearViewport, setIsNearViewport] = useState(false);
+  /* Also paused while the page is being scrolled. The physics loop drives 28
+   * <Html> tiles, so it is the second most expensive thing on the page, and
+   * nobody drags a ball mid-flick. Frames go to the scroll instead. */
+  const [isScrolling, setIsScrolling] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const sparkRef = useRef<HTMLDivElement>(null);
   const lightningRef = useRef<LightningHandle | null>(null);
@@ -887,9 +909,26 @@ export default function SkillNetwork() {
     );
     io.observe(el);
 
+    let idle = 0;
+    let scrolling = false;
+    const onScroll = () => {
+      if (!scrolling) {
+        scrolling = true;
+        setIsScrolling(true);
+      }
+      window.clearTimeout(idle);
+      idle = window.setTimeout(() => {
+        scrolling = false;
+        setIsScrolling(false);
+      }, 180);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+
     return () => {
       ro.disconnect();
       io.disconnect();
+      window.clearTimeout(idle);
+      window.removeEventListener("scroll", onScroll);
     };
   }, []);
 
@@ -915,6 +954,7 @@ export default function SkillNetwork() {
     <div
       ref={containerRef}
       data-skill-visible={isNearViewport ? "true" : "false"}
+      data-skill-active={isNearViewport && !isScrolling ? "true" : "false"}
       className="relative h-full w-full select-none"
     >
       {/* Storm flash backdrop. First in DOM so it paints BEHIND the balls;
@@ -977,7 +1017,7 @@ export default function SkillNetwork() {
       <LightningCanvas handleRef={lightningRef} />
 
       <Canvas
-        frameloop={isNearViewport ? "always" : "never"}
+        frameloop={isNearViewport && !isScrolling ? "always" : "never"}
         camera={{ position: [0, 0, 7], fov: 50 }}
         dpr={[1, 1.5]}
         gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}

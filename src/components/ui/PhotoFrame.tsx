@@ -46,6 +46,20 @@ export function PhotoFrame() {
     rectRef.current = e.currentTarget.getBoundingClientRect();
   }, []);
 
+  /* Touch never fires pointerenter before the first move, and a tap that does not
+   * move fires no pointermove at all — which is why the frame did nothing on a
+   * phone. Measuring and writing the pointer on pointerdown makes a plain tap
+   * tilt the frame exactly like a hover does on a laptop. */
+  const onPointerDown = useCallback(
+    (e: React.PointerEvent<HTMLDivElement>) => {
+      rectRef.current = e.currentTarget.getBoundingClientRect();
+      pointerRef.current.x = e.clientX;
+      pointerRef.current.y = e.clientY;
+      applyPointer();
+    },
+    [applyPointer],
+  );
+
   const onPointerMove = useCallback(
     (e: React.PointerEvent<HTMLDivElement>) => {
       pointerRef.current.x = e.clientX;
@@ -83,7 +97,10 @@ export function PhotoFrame() {
       <div
         ref={setRef}
         onPointerEnter={onPointerEnter}
+        onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
+        onPointerUp={onPointerLeave}
+        onPointerCancel={onPointerLeave}
         onPointerLeave={onPointerLeave}
         className="photo-frame"
       >
