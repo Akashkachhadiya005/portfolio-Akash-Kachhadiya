@@ -954,7 +954,7 @@ export default function SkillNetwork() {
     <div
       ref={containerRef}
       data-skill-visible={isNearViewport ? "true" : "false"}
-      data-skill-active={isNearViewport && !isScrolling ? "true" : "false"}
+      data-skill-active={isNearViewport ? "true" : "false"}
       className="relative h-full w-full select-none"
     >
       {/* Storm flash backdrop. First in DOM so it paints BEHIND the balls;
@@ -1014,10 +1014,10 @@ export default function SkillNetwork() {
       <div ref={sparkRef} className="pointer-events-none absolute inset-0 z-30" />
 
       {/* Photo-realistic lightning layer (portalled to body, fixed overlay) */}
-      <LightningCanvas handleRef={lightningRef} />
+      {isNearViewport && <LightningCanvas handleRef={lightningRef} />}
 
       <Canvas
-        frameloop={isNearViewport && !isScrolling ? "always" : "never"}
+        frameloop={isNearViewport ? "always" : "never"}
         camera={{ position: [0, 0, 7], fov: 50 }}
         dpr={[1, 1.5]}
         gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
