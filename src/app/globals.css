@@ -11,7 +11,7 @@
    ON THE RED. The reference image's red core is around #FF3D14. That exact
    value on a button fails WCAG AA with a white label (4.2:1 against the 4.5:1
    floor for 14px semibold text). #DB360C is the same hue and chroma taken one
-   step deeper, which measures 4.62:1 — visually the reference red, legally
+   step deeper, which measures 4.62:1 "” visually the reference red, legally
    readable. The undimmed #FF4A1F still appears in the hero flow and in button
    glows, where nothing has to be read against it.
    ============================================================ */
@@ -58,7 +58,7 @@
 
   /* ---------- ACCENT TEXT OVER THE HERO FIELD ----------
      #0FA4AF has a relative luminance of 0.297. Against this white background that
-     is 3.02:1 — below the 4.5:1 floor for normal text, and NOT fixable by
+     is 3.02:1 "” below the 4.5:1 floor for normal text, and NOT fixable by
      darkening what is behind it, because what is behind it is the page itself.
      That failure predates the aurora; it is a property of the accent colour.
 
@@ -69,7 +69,7 @@
   --accent-text: #024950;
 
   /* ---------- 3D SKILL NETWORK NODES ----------
-     DELIBERATELY THEME-INDEPENDENT — do not add these to the .dark block.
+     DELIBERATELY THEME-INDEPENDENT "” do not add these to the .dark block.
 
      Every brand mark in the network is drawn by its owner to sit on a light
      surface. On dark teal, Git's red, Python's blue/yellow, MongoDB's green and
@@ -96,20 +96,20 @@
   --accent: #0fa4af;
   --accent-foreground: #003135;
   --ring: #db360c;
-  /* Soft light cyan — the palette's own #AFDDE5. Luminance 0.665, so it clears
+  /* Soft light cyan "” the palette's own #AFDDE5. Luminance 0.665, so it clears
      4.5:1 against the attenuated field behind the hero copy. */
   --accent-text: #afdde5;
 }
 
 /* ---------- BASE STYLES ---------- */
-/* NO background-color TRANSITION HERE — it was tried and removed.
+/* NO background-color TRANSITION HERE "” it was tried and removed.
  *
  * Easing the base colour looks right on paper and stalls in practice: a
  * background-color transition on a full-viewport element repaints the entire
  * viewport on every frame for its whole duration, and it finished exactly as the
  * mode-change effect finished, which is why the effect appeared to catch right at
  * the end. The gradual colour settle is done with an opacity fade on one layer
- * instead — see .theme-iris-tint. Opacity is composited; colour is not. */
+ * instead "” see .theme-iris-tint. Opacity is composited; colour is not. */
 html {
   background-color: var(--background);
 }
@@ -134,7 +134,7 @@ body {
    4K and cramped on a phone.
    ============================================================ */
 /* Grid-led sections: track the viewport, no fixed ceiling. A px cap is exactly
-   what caused the dead space — at a 2560 viewport a 1728px cap fills only 68%,
+   what caused the dead space "” at a 2560 viewport a 1728px cap fills only 68%,
    and at 3400 only 51%. */
 .page-shell {
   width: 100%;
@@ -165,7 +165,7 @@ body {
 }
 
 /* ============================================================
-   BUTTONS — tactile, physical
+   BUTTONS "” tactile, physical
 
    One shared surface so every control matches. Four layers build the
    depth: a vertical sheen, a bright inner top edge, a solid darker
@@ -214,7 +214,7 @@ body {
 }
 
 /* ============================================================
-   BUTTON5 — the primary control surface.
+   BUTTON5 "” the primary control surface.
 
    Layers, back to front:
      base        the element itself: gradient fill, thick bottom edge, cast shadow
@@ -285,7 +285,7 @@ body {
      There was a 90ms one here, and that is exactly what "the effect runs behind
      the cursor" was: every pointer move started a fresh 90ms interpolation, so the
      surface was always aiming at where the cursor had been. Tracking must be
-     immediate — the pointer IS the animation. The graceful part is handled by
+     immediate "” the pointer IS the animation. The graceful part is handled by
      [data-settling], which springs the surface back to flat once the pointer
      leaves, which is the only moment easing belongs here.
      
@@ -347,7 +347,7 @@ body {
     inset 0 -17px 24px -12px color-mix(in srgb, var(--soap-deep) 76%, transparent),
     inset 21px 0 27px -21px color-mix(in srgb, var(--soap-deep) 66%, transparent),
     inset -21px 0 27px -21px color-mix(in srgb, var(--soap-deep) 66%, transparent),
-    /* one soft, diffuse contact shadow — matte, not floating */ 0 6px 10px -4px
+    /* one soft, diffuse contact shadow "” matte, not floating */ 0 6px 10px -4px
       rgb(0 0 0 / 0.3),
     0 14px 24px -12px rgb(0 0 0 / 0.34);
   /* NO transition on box-shadow or filter here, deliberately.
@@ -355,8 +355,8 @@ body {
      Both are paint operations. Interpolating ten shadow layers on a rounded bar
      repaints it on every frame of the transition, and with several buttons on
      screen that is what made hover feel heavy and what stole frames while
-     scrolling. The shading now switches instantly — which reads as MORE
-     responsive, not less — and every bit of perceived motion comes from the
+     scrolling. The shading now switches instantly "” which reads as MORE
+     responsive, not less "” and every bit of perceived motion comes from the
      transform on .btn5, which the compositor handles without paint. */
 }
 
@@ -393,7 +393,7 @@ body {
   translate: 0 -1.5px;
 }
 
-/* The bar layer only changes its shading on hover — never its position.
+/* The bar layer only changes its shading on hover "” never its position.
    The lighter tone is baked into the shadow colours rather than applied with a
    `filter: brightness()`, because a filter forces the whole layer through a
    second raster pass. */
@@ -491,12 +491,12 @@ body {
 }
 
 /* ------------------------------------------------------------
-   SIGNAL TRACE — one bright packet running the border.
+   SIGNAL TRACE "” one bright packet running the border.
 
    A conic gradient with a single lit arc, rotating inside a wrapper that is
    masked down to a 1.5px ring. The mask is the standard two-layer trick: one
    layer clipped to the content box, one to the border box, composited with
-   `exclude`, which leaves exactly the padding area — the ring.
+   `exclude`, which leaves exactly the padding area "” the ring.
 
    Cost is one rotating element. `rotate` is a compositor property, and the
    animation is paused until the pointer arrives, so an idle page does no work.
@@ -569,14 +569,14 @@ body {
    It used to be pushed forward in Z to parallax against the face. That is what
    made the text read as a separate object floating over the bar: a raised layer
    catches its own light and shifts independently when the bar tilts. Moulded
-   lettering cannot do either — it is part of the same piece of soap. So there is
+   lettering cannot do either "” it is part of the same piece of soap. So there is
    no Z offset here at all, and the label inherits the bar's transform, which
    keeps it locked to the surface through every tilt and press. */
-/* CARVED LETTERING — a recess in the bar, not ink on it.
+/* CARVED LETTERING "” a recess in the bar, not ink on it.
    
    The glyph is filled with THE BAR'S OWN COLOUR. That is the whole trick, and it
    is what the previous version got wrong: a darker fill colour is paint, and paint
-   always reads as a separate object. A real moulded letter is the same material —
+   always reads as a separate object. A real moulded letter is the same material "”
    you only see it because its walls catch light differently.
    
    So the letterform is invisible on its own, and three shadow layers describe the
@@ -595,7 +595,7 @@ body {
   /* THE ONE HONEST TRADE-OFF IN THIS BUTTON.
      
      Lettering the exact colour of the bar is what the photograph shows, and it is
-     genuinely unreadable at button size — the two previous attempts proved it, and
+     genuinely unreadable at button size "” the two previous attempts proved it, and
      no amount of shadow tuning fixes it, because the fill carries no contrast at
      all. Enlarging the text to compensate broke every button's size instead.
      
@@ -693,7 +693,7 @@ body {
   .btn5[data-ripple="2"]::after {
     animation: none;
   }
-  /* Trace stays as a static lit edge — the affordance survives, the motion goes */
+  /* Trace stays as a static lit edge "” the affordance survives, the motion goes */
   .btn5-trace::before {
     animation: none;
     background: color-mix(in srgb, var(--soap-top) 60%, transparent);
@@ -740,7 +740,7 @@ body {
 }
 
 /* ============================================================
-   THEME TOGGLE — three-position pill slider.
+   THEME TOGGLE "” three-position pill slider.
 
    Two opposing depth cues do all the work:
 
@@ -780,14 +780,14 @@ body {
     inset 0 -1px 0 rgb(255 255 255 / 0.24),
     0 1px 0 rgb(255 255 255 / 0.1);
   /* No backdrop-filter. This control lives inside the FIXED navbar, so a blur
-     here has to be recomputed against whatever is scrolling underneath it — on
+     here has to be recomputed against whatever is scrolling underneath it "” on
      every scrolled frame, for the life of the page. The recessed channel is
      described by its own gradient and inset shadows instead, which cost nothing
      once painted. */
 }
 
 /* ------------------------------------------------------------
-   THEME TOGGLE SLIDER — Smooth Rubber Ball Spring Overshoot
+   THEME TOGGLE SLIDER "” Smooth Rubber Ball Spring Overshoot
    ------------------------------------------------------------ */
 .theme-pill-thumb {
   position: absolute;
@@ -891,7 +891,7 @@ body {
 
    Every surface on this site expresses itself through :hover, and a phone has no
    hover. Chromium and Safari do synthesise one after a tap, but it arrives when
-   the finger LIFTS and then sticks until the next tap somewhere else — which is
+   the finger LIFTS and then sticks until the next tap somewhere else "” which is
    why effects on a phone felt absent, then late, then stuck.
 
    On any device whose primary pointer cannot hover, the hover state is remapped
@@ -954,7 +954,7 @@ body {
   outline-offset: 2px;
 }
 
-/* Depth is decorative — drop the movement, keep the affordance */
+/* Depth is decorative "” drop the movement, keep the affordance */
 @media (prefers-reduced-motion: reduce) {
   .btn-3d,
   .btn-3d:hover,
@@ -967,12 +967,12 @@ body {
 }
 
 /* ============================================================
-   AURORA IRIS — the mode change.
+   AURORA IRIS "” the mode change.
 
    A luminous ring expands out of the pressed button, trailing a translucent
    aurora veil in the INCOMING theme's colours. The palette flips as the ring
    crosses the middle of the screen (timed in ThemeToggle), so the change reads as
-   the ring converting the page — and the UI stays visible and legible throughout,
+   the ring converting the page "” and the UI stays visible and legible throughout,
    which the previous opaque wipe did not.
 
    Colours are literal hex rather than tokens on purpose: while this paints, the
@@ -986,14 +986,14 @@ body {
   position: fixed;
   inset: 0;
   /* BEHIND the interface. z-index 1 puts it above every section's own background
-     but beneath anything that establishes a stacking position of its own — which
+     but beneath anything that establishes a stacking position of its own "” which
      is why .hero-copy, .photo-frame-wrap, .cert-badge and .btn5 are all given a
      z-index below. The light passes behind the logo, the portrait and the buttons
      rather than washing over them.
      
      Being honest about the limit: a section painted with a fully opaque background
      will hide any layer placed behind it. That is why the light is at 1 rather
-     than -1 — at -1 it would be invisible everywhere except the hero. */
+     than -1 "” at -1 it would be invisible everywhere except the hero. */
   z-index: 1;
   pointer-events: none;
   contain: strict;
@@ -1006,7 +1006,7 @@ body {
         It is invisible until the flip frame (the keyframes hold it at 0), then
         appears at partial strength and clears. Partial, so the interface stays
         readable; opacity, so the whole settle is one composited fade with no
-        repaint — which is the difference between this and the background-color
+        repaint "” which is the difference between this and the background-color
         transition it replaced. */
 .theme-iris-tint {
   position: absolute;
@@ -1021,7 +1021,7 @@ body {
 }
 
 /* Lighter than it was (0.72): the point is a soft settle, not a dimmed page.
-   Holds at zero until the flip frame at 39% of 820ms ≈ 320ms. */
+   Holds at zero until the flip frame at 39% of 820ms â‰ˆ 320ms. */
 @keyframes theme-iris-tint {
   0%,
   38% {
@@ -1036,11 +1036,14 @@ body {
 }
 
 /* ============================================================
-   CIRCULAR RIPPLE VIEW TRANSITION — Senior Developer Standard
+   CIRCULAR RIPPLE VIEW TRANSITION "” Senior Developer Standard
 
    Sweeps a silky-smooth circular clip-path wave from the exact center of the
    clicked theme toggle button across the entire screen at 60 FPS.
    ============================================================ */
+/* New snapshot clips in via JS clip-path animation. Old snapshot sits
+   still below it -- no fading, no flashing. The browser default cross-fade
+   is disabled; everything is driven by the single JS animation call. */
 ::view-transition-old(root),
 ::view-transition-new(root) {
   animation: none;
@@ -1051,10 +1054,11 @@ body {
 }
 ::view-transition-new(root) {
   z-index: 9999;
+  clip-path: circle(0px at 50% 50%);
 }
 
 /* Shared geometry: a fixed 320px circle centred on the origin, scaled up to reach
-   the furthest corner. Fixed base size is the performance rule — the GPU stretches
+   the furthest corner. Fixed base size is the performance rule "” the GPU stretches
    one small painted texture, so the cost is the same on a phone and on a 4K
    display. Circle-from-origin is the correctness rule: it reaches every corner on
    any aspect ratio, which a tilted band does not. */
@@ -1114,7 +1118,7 @@ body {
 /* ---- the dome: the incoming theme's own colour, brightest at the rim so it reads
         as a swelling volume of light rather than a flat disc. */
 .theme-iris[data-to="dark"] .theme-iris-veil {
-  /* #003135 → #024950 → a breath of #0FA4AF. The dark palette, nothing else. */
+  /* #003135 â†’ #024950 â†’ a breath of #0FA4AF. The dark palette, nothing else. */
   background: radial-gradient(
     circle closest-side,
     rgb(0 49 53 / 0.22) 0%,
@@ -1126,7 +1130,7 @@ body {
 }
 
 .theme-iris[data-to="light"] .theme-iris-veil {
-  /* #FAFFFE → #E8F6F8 → a breath of #AFDDE5. The light palette, nothing else. */
+  /* #FAFFFE â†’ #E8F6F8 â†’ a breath of #AFDDE5. The light palette, nothing else. */
   background: radial-gradient(
     circle closest-side,
     rgb(250 255 254 / 0.3) 0%,
@@ -1163,7 +1167,7 @@ body {
 }
 
 /* Three staggered expansions. The wavefront leads, the dome follows, the rays
-   trail and rotate — that separation in time is what reads as depth. */
+   trail and rotate "” that separation in time is what reads as depth. */
 .theme-iris-run .theme-iris-rays {
   animation: theme-iris-rays 820ms cubic-bezier(0.16, 0.72, 0.16, 1) forwards;
 }
@@ -1237,13 +1241,13 @@ body {
    
    There used to be one, on background-color/border-color/color. Switching theme
    changes the palette variables, so every element and pseudo-element on the page
-   animated at once — thousands of repaints per frame for 200ms. That was the
+   animated at once "” thousands of repaints per frame for 200ms. That was the
    original stall, and it also leaked a 200ms colour lag into every hover.
    
    The View Transitions API replaced it, and was itself removed: snapshotting the
    document captured the hero's WebGL canvas into a stale texture, which is what
-   produced the black contour artefacts during dark → light. The theme change is
-   now a single instant flip, timed to land under the travelling ring — see
+   produced the black contour artefacts during dark â†’ light. The theme change is
+   now a single instant flip, timed to land under the travelling ring "” see
    .theme-iris below. */
 
 /* Colour transitions kept ONLY on things the user actually interacts with, so
@@ -1273,14 +1277,14 @@ select,
 }
 
 /* ============================================================
-   STORM FLASH — background blink behind the 3D skill network.
+   STORM FLASH "” background blink behind the 3D skill network.
    Fires while a skill ball is being dragged.
 
    Two deliberate choices:
    1. RADIAL FALLOFF, never a flat fill. The earlier version painted a
       full-canvas rectangle, which read as a grey box with hard edges.
       This fades to fully transparent well before the frame border.
-   2. Palette only — #0FA4AF accent, #AFDDE5 soft cyan, #024950 / #003135
+   2. Palette only "” #0FA4AF accent, #AFDDE5 soft cyan, #024950 / #003135
       teals. No neutral grey anywhere.
 
    Opacity is driven from JS on a slow envelope (see LightningSync), NOT the
@@ -1306,11 +1310,11 @@ select,
 }
 
 /* ============================================================
-   CLOUD LOGO — the grabbed skill's mark, huge and diffuse behind the
+   CLOUD LOGO "” the grabbed skill's mark, huge and diffuse behind the
    network, as if it formed out of cloud.
 
    The logo file is used ONLY as a mask; the fill comes from the site's
-   own teal/cyan gradient. That is what keeps it "not colourful" — a
+   own teal/cyan gradient. That is what keeps it "not colourful" "” a
    vendor brand colour can never leak through a mask.
 
    Two stacked copies build the cloud: a big soft `haze` for the mass and
@@ -1338,12 +1342,12 @@ select,
 }
 
 /* The CORE must lead and the haze support it. With the haze stronger the mark
-   dissolved into an unrecognisable blob — cloudy, but no longer a logo.
+   dissolved into an unrecognisable blob "” cloudy, but no longer a logo.
 
    CHANGED FROM CSS MASK TO <img>: CSS mask required the SVG to cooperate (no
    intrinsic-size = collapsed mask; transparent-fill regions = holes). Using a
-   plain <img> + blur + opacity works with every SVG uniformly — Devicon full-
-   colour, Simple Icons mono, self-hosted locals — they all render the same as
+   plain <img> + blur + opacity works with every SVG uniformly "” Devicon full-
+   colour, Simple Icons mono, self-hosted locals "” they all render the same as
    in the ball tile, just big, blurred, and faded. The logo's own colours show
    through the blur, which reads correctly. */
 .cloud-logo-img {
@@ -1358,7 +1362,7 @@ select,
 
 /* The HAZE is flattened to a pure silhouette of the OPPOSITE polarity to the
    page, then blurred. That is what makes every mark readable back there
-   regardless of its own colours — GitHub, OpenAI and LangChain are genuinely
+   regardless of its own colours "” GitHub, OpenAI and LangChain are genuinely
    black, so against the dark teal background they simply vanished. Now they sit
    inside a soft light halo instead.
      brightness(0)            -> collapse all colour to black, keep alpha
@@ -1386,7 +1390,7 @@ select,
   opacity: 0.6;
 }
 
-/* Skills with no logo in either CDN (RAGAS, Power BI) — same cloud
+/* Skills with no logo in either CDN (RAGAS, Power BI) "” same cloud
    treatment applied to their name instead of a mark. */
 .cloud-logo-text {
   position: absolute;
@@ -1419,7 +1423,7 @@ select,
 }
 
 /* ============================================================
-   NODE HALO — soft glow around each skill ball.
+   NODE HALO "” soft glow around each skill ball.
 
    Deliberately a gradient and not `filter: blur()`. The tile is scaled every
    frame by the depth and breathing values; a blurred child of a scaling parent
@@ -1456,7 +1460,7 @@ select,
 }
 
 /* ============================================================
-   HERO CERT BADGES — bigger, and each one is a link to #certifications.
+   HERO CERT BADGES "” bigger, and each one is a link to #certifications.
 
    The badge floats on a tilted glass plate: the plate lifts and rotates on
    hover, a sheen sweeps across it, and an accent bloom grows behind. The label
@@ -1473,7 +1477,7 @@ select,
 }
 
 /* NO glass plate, NO card background. The AWS badges are already finished
-   artwork with their own shape and shading — putting them on a frosted tile
+   artwork with their own shape and shading "” putting them on a frosted tile
    fought that and made them look smaller than they are. The badge itself is the
    object now: bigger, and it tilts and lifts on its own. */
 .cert-badge-plate {
@@ -1497,14 +1501,14 @@ select,
   transition: transform 460ms cubic-bezier(0.22, 1.15, 0.3, 1);
 }
 
-/* Accent bloom behind the plate — gradient, not a blur filter */
+/* Accent bloom behind the plate "” gradient, not a blur filter */
 /* The light behind the badge.
    
    It used to arrive 320ms after a 110ms scale, which is why the glow read as
    late rather than as part of the same gesture. It is now 140ms with an
    ease-out, so the light and the lift land together. It also carries the whole
-   hover glow on its own, because the alternative — transitioning a drop-shadow
-   filter on the artwork — repaints the badge on every frame of the transition,
+   hover glow on its own, because the alternative "” transitioning a drop-shadow
+   filter on the artwork "” repaints the badge on every frame of the transition,
    and that was the source of the hitch. Opacity on a gradient is a compositor
    fade: no paint at all. */
 .cert-badge-plate::before {
@@ -1526,7 +1530,7 @@ select,
 /* The zoom rides the independent `scale` property, so it eases at the same 140ms
    as the glow while the tilt keeps tracking the cursor with no transition at all.
    Previously both shared one transform, which meant every pointer move restarted
-   the 140ms interpolation — the badge was always chasing the cursor. */
+   the 140ms interpolation "” the badge was always chasing the cursor. */
 .cert-badge-plate {
   scale: 1;
   transition: scale 140ms cubic-bezier(0.3, 0.9, 0.4, 1);
@@ -1540,7 +1544,7 @@ select,
   opacity: 1;
 }
 
-/* Full width — the badge IS the object, so it uses all the space */
+/* Full width "” the badge IS the object, so it uses all the space */
 .cert-badge-img {
   position: relative;
   z-index: 1;
@@ -1566,7 +1570,7 @@ select,
      .cert-badge-edge   a thin bright bevel, offset a hair, for refracted rim
 
    `--badge-src` is set inline per badge, so one rule serves all three. Nothing
-   here animates size or filters — the specular moves via gradient position and
+   here animates size or filters "” the specular moves via gradient position and
    the layers fade with opacity.
    ------------------------------------------------------------ */
 .cert-badge-glass,
@@ -1631,7 +1635,7 @@ select,
   opacity: 0.75;
 }
 
-/* Label as a real pill — it is a link, so it should look like one */
+/* Label as a real pill "” it is a link, so it should look like one */
 .cert-badge-name {
   padding: 0.3rem 0.85rem;
   border-radius: 9999px;
@@ -1674,7 +1678,7 @@ select,
 }
 
 /* ============================================================
-   PHOTO FRAME — portrait mount that reacts to the pointer.
+   PHOTO FRAME "” portrait mount that reacts to the pointer.
 
    The bloom lives on the WRAPPER, not the frame, so it is outside the frame's
    `overflow: hidden` and can spill softly behind it.
@@ -1688,16 +1692,16 @@ select,
 
 /* Desktop: scaled with the viewport but bounded. Raise the clamp values here
    to grow the frame; lower them to shrink it. The three numbers mean:
-   MIN  — smallest it will ever be (at a narrow laptop)
-   PREFERRED — the vw value it tracks (% of viewport width)
-   MAX  — largest it will ever be (at an ultra-wide)  */
+   MIN  "” smallest it will ever be (at a narrow laptop)
+   PREFERRED "” the vw value it tracks (% of viewport width)
+   MAX  "” largest it will ever be (at an ultra-wide)  */
 @media (min-width: 1024px) {
   .photo-frame-wrap {
     max-width: clamp(260px, 22vw, 360px);
   }
 }
 
-/* Accent bloom behind the frame — a gradient, not a blur filter, so tilting the
+/* Accent bloom behind the frame "” a gradient, not a blur filter, so tilting the
    frame never triggers a re-raster (see the note on .node-glow). */
 .photo-frame-wrap::before {
   content: "";
@@ -1744,7 +1748,7 @@ select,
     0 40px 70px -28px rgb(0 0 0 / 0.48);
 
   transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
-  /* No tracking transition — the frame follows the pointer frame for frame. Only
+  /* No tracking transition "” the frame follows the pointer frame for frame. Only
      the release eases, via [data-settling]. The shadow layers are never
      interpolated either: on a surface this large that was the heaviest repaint on
      the page. */
@@ -1774,7 +1778,7 @@ select,
   background: color-mix(in srgb, var(--muted) 70%, transparent);
 }
 
-/* The portrait itself carries no overlay at all — that is the point of this
+/* The portrait itself carries no overlay at all "” that is the point of this
    revision. A very slight clarity lift on hover is the only change, and it
    affects the photo's own pixels rather than painting anything on top. */
 .photo-frame-img {
@@ -1793,7 +1797,7 @@ select,
 /* MOUNT-ONLY LIGHT.
    
    The old version put a pointer-tracked highlight and a diagonal glass band
-   across the whole frame, photo included — which is what was washing out the
+   across the whole frame, photo included "” which is what was washing out the
    face. Nothing may paint over the portrait, so this layer is masked down to the
    0.5rem mount that surrounds it: the light plays on the frame material, the
    photograph stays untouched.
@@ -1840,7 +1844,7 @@ select,
    
    The orbiting conic glint is gone. A light circling the frame forever is noise:
    it drags the eye away from the portrait, and it never stops. What replaced it
-   is static geometry that responds only to the pointer — four viewfinder
+   is static geometry that responds only to the pointer "” four viewfinder
    brackets that extend along the corners on hover, like a camera acquiring
    focus. It sits on the mount, never over the photograph, and it animates
    `inset` on four small elements rather than rotating a large gradient. */
@@ -1910,7 +1914,7 @@ select,
 }
 
 /* ============================================================
-   EXPERIENCE TIMELINE — a live signal bus.
+   EXPERIENCE TIMELINE "” a live signal bus.
 
    The old version was a gradient bar that grew on scroll. This treats the rail
    as an actual wire carrying data, which is the right metaphor for the section
@@ -1918,7 +1922,7 @@ select,
 
      .timeline-track   unlit bus, drawn as dashes rather than a solid line
      .timeline-live    the energised length. CLIPPED, not scaled, so the packets
-                       inside keep their true size — scaleY would have squashed
+                       inside keep their true size "” scaleY would have squashed
                        them along with the rail.
      .timeline-flow    packets running the wire. Two copies at different speeds
                        give a 2px-wide line parallax depth.
@@ -1986,7 +1990,7 @@ select,
 }
 
 /* Read head. The ring pulse is a scaling pseudo-element rather than an animated
-   box-shadow — a shadow keyframe repaints the glow every frame, forever. */
+   box-shadow "” a shadow keyframe repaints the glow every frame, forever. */
 .timeline-head {
   width: 10px;
   height: 10px;
@@ -2093,7 +2097,7 @@ select,
 }
 
 /* ============================================================
-   SOCIAL DOTS — footer Connect row.
+   SOCIAL DOTS "” footer Connect row.
    Circular glass wells that lift and light up on hover. 44px so they clear the
    WCAG 2.5.8 / Apple HIG minimum touch target.
    ============================================================ */
@@ -2153,7 +2157,7 @@ select,
 }
 
 /* ============================================================
-   FLOATING HOME BUTTON — appears once the page has been scrolled.
+   FLOATING HOME BUTTON "” appears once the page has been scrolled.
 
    Glossy dome: a chrome ring, a bright specular cap on the upper half, a
    coloured core, and a cast shadow underneath. The ring counter-rotates its
@@ -2191,7 +2195,7 @@ select,
     0 10px 24px -6px rgb(0 0 0 / 0.45),
     0 0 26px -4px color-mix(in srgb, var(--accent) 50%, transparent);
 
-  /* Hidden state — translateX keeps it centred while it slides */
+  /* Hidden state "” translateX keeps it centred while it slides */
   transform: translateX(-50%) translateY(140%) scale(0.8);
   opacity: 0;
   pointer-events: none;
@@ -2292,7 +2296,7 @@ select,
   width: 100%;
   border-radius: 0.75rem;
   padding: 0.7rem 1rem;
-  font-size: 1rem; /* 16px — do not lower */
+  font-size: 1rem; /* 16px "” do not lower */
   line-height: 1.5;
   color: var(--foreground);
   background-color: color-mix(in srgb, var(--card) 70%, transparent);
@@ -2306,7 +2310,7 @@ select,
     inset 0 1px 3px rgb(0 0 0 / 0.14),
     inset 0 1px 0 rgb(255 255 255 / 0.16);
   /* Focus ring switches instantly rather than interpolating a shadow on a large
-     textarea — the focus response reads sharper for it. */
+     textarea "” the focus response reads sharper for it. */
   transition:
     border-color 200ms ease,
     background-color 200ms ease;
@@ -2339,7 +2343,7 @@ select,
 }
 
 /* ============================================================
-   CARD GRID — projects, certifications.
+   CARD GRID "” projects, certifications.
 
    `lg:grid-cols-3` pinned the column COUNT, so the column WIDTH had to absorb
    every viewport change: at 2560px each card stretched to ~700px, and the same
@@ -2362,7 +2366,7 @@ select,
   /* CAP AT 4 COLUMNS. `auto-fit` on its own keeps adding columns forever, so a
      3400px screen showed six 21rem cards in a row. Constraining the grid's own
      width to exactly four tracks plus three gaps means the browser can never
-     fit a fifth, while the track size stays fixed — so a card is the same size
+     fit a fifth, while the track size stays fixed "” so a card is the same size
      at every zoom level and only the COUNT steps: 4 -> 3 -> 2 -> 1.
 
      The 17rem floor is what lets four fit on a laptop: 4 * 17 + 3 * 1.5 =
@@ -2401,9 +2405,9 @@ select,
   animation: spark-fly 0.45s ease-out forwards;
 }
 
-/* drei Html wrappers — do NOT add overflow-hidden here (clips tooltips) */
+/* drei Html wrappers "” do NOT add overflow-hidden here (clips tooltips) */
 
-/* Electric lightning bolt effect — appears when dragging a skill node */
+/* Electric lightning bolt effect "” appears when dragging a skill node */
 @keyframes lightning-fade {
   0% {
     opacity: 1;
@@ -2479,7 +2483,7 @@ select,
 
 /* The 28 skill tiles are promoted ONLY while the physics loop is actually moving
    them. `will-change: transform` used to sit on them permanently, which meant 28
-   standing compositor layers for the whole life of the page — and this codebase
+   standing compositor layers for the whole life of the page "” and this codebase
    has already measured that many promoted layers are a cost in themselves. While
    the section is offscreen or the page is being scrolled, the tiles are static, so
    they need no promotion at all. */
@@ -2495,14 +2499,14 @@ select,
 }
 
 /* ============================================================
-   AURORA — hero background shell.
+   AURORA "” hero background shell.
 
    The field itself is a WebGL fragment shader (see src/lib/aurora/shader.ts).
    This is the container that keeps it safe, the readability scrim, and the
    static fallback for devices with no WebGL or a reduced-motion preference.
 
    NO CSS BLUR ANYWHERE IN HERE, deliberately. A `filter: blur()` is only cheap
-   while its layer is never scaled — scaling forces the blur to be re-rasterised
+   while its layer is never scaled "” scaling forces the blur to be re-rasterised
    every frame, which is the trap the previous implementation lived inside. The
    live path has no blur at all, and the fallback's blur never animates and never
    scales, so it rasterises once.
@@ -2619,9 +2623,9 @@ select,
    no animation.
 
    The curves come from a STATIC SVG turbulence displacement baked over rotated
-   banded gradients. An animated SVG filter over a full viewport is not viable —
+   banded gradients. An animated SVG filter over a full viewport is not viable "”
    it is documented as severe for performance and Chromium has an open issue on
-   displacement-map paint cost — but running it once at paint is exactly the
+   displacement-map paint cost "” but running it once at paint is exactly the
    condition under which it is affordable. The bands are masked so they terminate
    before they read as stripes.
 
@@ -2680,15 +2684,15 @@ select,
 }
 
 /* ============================================================
-   NAVBAR LOGO CONTAINER — animated aurora capsule.
+   NAVBAR LOGO CONTAINER "” animated aurora capsule.
 
    All animation lives on ::before (gradient field) and ::after (rim glow).
    No extra DOM nodes, no overflow bleed, no z-index fights.
 
-   Layer order inside .logo-shell (back → front):
+   Layer order inside .logo-shell (back â†’ front):
      ::before   z-index 0   the drifting aurora gradient field
      ::after    z-index 1   the pulsing accent rim / outer glow
-     .logo-shell-img  z-index 2   the AK mark — always on top
+     .logo-shell-img  z-index 2   the AK mark "” always on top
 
    The animations run ALWAYS (not just on hover).
    Hover adds a lift + stronger glow shadow.
@@ -2723,7 +2727,7 @@ select,
   position: relative;
   isolation: isolate;
   border-radius: 0.6rem;
-  /* No padding — frame hugs the image. The 3D depth comes from shadows. */
+  /* No padding "” frame hugs the image. The 3D depth comes from shadows. */
   padding: 3px;
   /* The host's own background: dark teal in dark mode, near-white in light. */
   background-color: color-mix(in srgb, var(--card) 90%, transparent);
@@ -2761,7 +2765,7 @@ select,
       transparent 62%
     );
 
-  /* ALWAYS animating — not gated on :hover */
+  /* ALWAYS animating "” not gated on :hover */
   animation: ls-drift 9s ease-in-out infinite alternate;
 }
 
@@ -2791,7 +2795,7 @@ select,
   z-index: 1;
   border-radius: inherit;
   pointer-events: none;
-  /* The rim is a box-shadow drawn INWARD — sits on top of the gradient,
+  /* The rim is a box-shadow drawn INWARD "” sits on top of the gradient,
      below the image, never escapes layout. */
   box-shadow:
     inset 0 0 0 1.5px color-mix(in srgb, var(--accent) 55%, transparent),
@@ -2805,12 +2809,12 @@ select,
     inset 0 0 12px 2px color-mix(in srgb, var(--accent) 35%, transparent);
 }
 
-/* ---- IMAGE — always above both pseudo layers ---- */
+/* ---- IMAGE "” always above both pseudo layers ---- */
 .logo-shell-img {
   position: relative;
   z-index: 2;
   display: block;
-  width: 3.25rem; /* 52px — fits inside h-16 bar with room to breathe */
+  width: 3.25rem; /* 52px "” fits inside h-16 bar with room to breathe */
   height: 3.25rem;
   object-fit: contain;
   /* Subtle shadow so the mark lifts off the glowing field */
@@ -2866,7 +2870,7 @@ select,
   }
 }
 
-/* Rim breathes: dim → bright → dim */
+/* Rim breathes: dim â†’ bright â†’ dim */
 @keyframes ls-rim {
   0%,
   100% {
@@ -2899,5 +2903,184 @@ select,
       0 3px 0 -1px color-mix(in srgb, var(--accent) 30%, #000),
       0 5px 12px -4px rgb(0 0 0 / 0.55),
       0 0 0 1px color-mix(in srgb, var(--accent) 28%, transparent);
+  }
+}
+
+/* ============================================================
+   LOGO BURST - theme-switch animation originating from the AK mark.
+
+   Eight "signal traces" shoot outward at 45-deg intervals, followed by an
+   expanding ring. The incoming theme's palette governs the colors:
+
+     [data-burst="dark"]   cyan #0FA4AF - the teal coming alive
+     [data-burst="light"]  soft sky #AFDDE5 - the light opening up
+
+   ARCHITECTURE:
+   - .logo-ray   thin line, rotated by --ray-i * 45deg, translated outward
+                 along its own axis via translateY in the keyframe.
+                 Compositor-only: transform + opacity.
+   - .logo-ring  circle that scales from 0.85 to 2.8x the shell, then fades.
+   - .logo-shell[data-burst] adds a brief glow flash to the container.
+   ============================================================ */
+
+.logo-ray {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 2px;
+  height: 10px;
+  margin-left: -1px;
+  margin-top: -5px;
+  border-radius: 9999px;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0;
+  transform-origin: center top;
+  transform: rotate(calc(var(--ray-i, 0) * 45deg)) scaleY(1) translateY(0);
+}
+
+.logo-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0;
+  border: 1.5px solid transparent;
+  transform: scale(1);
+  transform-origin: center center;
+}
+
+/* DARK-INCOMING  */
+.logo-shell[data-burst="dark"] .logo-ray {
+  background: linear-gradient(
+    to bottom,
+    #0fa4af,
+    color-mix(in srgb, #0fa4af 60%, transparent)
+  );
+  box-shadow: 0 0 4px 1px #0fa4af;
+  animation: logo-ray-burst 620ms cubic-bezier(0.22, 0.9, 0.3, 1) forwards;
+  animation-delay: calc(var(--ray-i, 0) * 18ms);
+}
+.logo-shell[data-burst="dark"] .logo-ring {
+  border-color: #0fa4af;
+  box-shadow: 0 0 8px 2px color-mix(in srgb, #0fa4af 55%, transparent);
+  animation: logo-ring-burst 580ms cubic-bezier(0.16, 0.9, 0.3, 1) forwards;
+}
+.logo-shell[data-burst="dark"] {
+  animation: logo-shell-flash-dark 580ms ease-out forwards;
+}
+
+/* LIGHT-INCOMING  */
+.logo-shell[data-burst="light"] .logo-ray {
+  background: linear-gradient(
+    to bottom,
+    #afdde5,
+    color-mix(in srgb, #afdde5 55%, transparent)
+  );
+  box-shadow: 0 0 4px 1px #afdde5;
+  animation: logo-ray-burst 620ms cubic-bezier(0.22, 0.9, 0.3, 1) forwards;
+  animation-delay: calc(var(--ray-i, 0) * 18ms);
+}
+.logo-shell[data-burst="light"] .logo-ring {
+  border-color: #afdde5;
+  box-shadow: 0 0 8px 2px color-mix(in srgb, #afdde5 60%, transparent);
+  animation: logo-ring-burst 580ms cubic-bezier(0.16, 0.9, 0.3, 1) forwards;
+}
+.logo-shell[data-burst="light"] {
+  animation: logo-shell-flash-light 580ms ease-out forwards;
+}
+
+@keyframes logo-ray-burst {
+  0% {
+    opacity: 0;
+    transform: rotate(calc(var(--ray-i, 0) * 45deg)) scaleY(0.5) translateY(0px);
+  }
+  15% {
+    opacity: 1;
+  }
+  55% {
+    opacity: 0.85;
+    transform: rotate(calc(var(--ray-i, 0) * 45deg)) scaleY(3.5) translateY(-14px);
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(calc(var(--ray-i, 0) * 45deg)) scaleY(1.5) translateY(-22px);
+  }
+}
+
+@keyframes logo-ring-burst {
+  0% {
+    opacity: 0.9;
+    transform: scale(0.85);
+  }
+  40% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2.8);
+  }
+}
+
+@keyframes logo-shell-flash-dark {
+  0% {
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.18),
+      0 3px 0 -1px color-mix(in srgb, #0fa4af 30%, #000),
+      0 5px 12px -4px rgb(0 0 0 / 0.55),
+      0 0 0 1px color-mix(in srgb, #0fa4af 28%, transparent);
+  }
+  20% {
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.28),
+      0 3px 0 -1px color-mix(in srgb, #0fa4af 50%, #000),
+      0 0 22px 4px color-mix(in srgb, #0fa4af 60%, transparent),
+      0 0 0 2px #0fa4af;
+  }
+  100% {
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.18),
+      0 3px 0 -1px color-mix(in srgb, var(--accent) 30%, #000),
+      0 5px 12px -4px rgb(0 0 0 / 0.55),
+      0 0 0 1px color-mix(in srgb, var(--accent) 28%, transparent);
+  }
+}
+
+@keyframes logo-shell-flash-light {
+  0% {
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.18),
+      0 3px 0 -1px color-mix(in srgb, #afdde5 30%, #000),
+      0 5px 12px -4px rgb(0 0 0 / 0.55),
+      0 0 0 1px color-mix(in srgb, #afdde5 28%, transparent);
+  }
+  20% {
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.35),
+      0 3px 0 -1px color-mix(in srgb, #afdde5 40%, #555),
+      0 0 22px 4px color-mix(in srgb, #afdde5 50%, transparent),
+      0 0 0 2px #afdde5;
+  }
+  100% {
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.18),
+      0 3px 0 -1px color-mix(in srgb, var(--accent) 30%, #000),
+      0 5px 12px -4px rgb(0 0 0 / 0.55),
+      0 0 0 1px color-mix(in srgb, var(--accent) 28%, transparent);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logo-shell[data-burst="dark"] .logo-ray,
+  .logo-shell[data-burst="light"] .logo-ray,
+  .logo-shell[data-burst="dark"] .logo-ring,
+  .logo-shell[data-burst="light"] .logo-ring {
+    animation: none;
+    opacity: 0;
+  }
+  .logo-shell[data-burst="dark"],
+  .logo-shell[data-burst="light"] {
+    animation: none;
   }
 }

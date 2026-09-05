@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { LogoShell } from "@/components/layout/LogoShell";
 import { Mail, ArrowUp, Phone } from "lucide-react";
 import { siteConfig } from "@/data/site-config";
 import { navLinks } from "@/data/navigation";
@@ -14,16 +15,8 @@ export function Footer() {
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           {/* Brand */}
           <div>
-            <Link href="/" aria-label="Akash Kachhadiya — home" className="inline-flex">
-              <span className="logo-shell">
-                <Image
-                  src="/images/ak-logo.png"
-                  alt="AK logo"
-                  width={56}
-                  height={56}
-                  className="logo-shell-img"
-                />
-              </span>
+            <Link href="/" aria-label="Akash Kachhadiya - home">
+              <LogoShell />
             </Link>
             <p className="mt-3 text-lg font-bold text-foreground">{siteConfig.name}</p>
             <p className="mt-1 text-sm text-muted-foreground">{siteConfig.title}</p>

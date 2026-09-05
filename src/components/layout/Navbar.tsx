@@ -1,13 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Image from "next/image";
 import { Menu, X, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { navLinks } from "@/data/navigation";
 import { siteConfig } from "@/data/site-config";
 import { Button3D } from "@/components/ui/Button3D";
 import { ThemeToggle } from "./ThemeToggle";
+import { LogoShell } from "./LogoShell";
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -54,16 +54,8 @@ export function Navbar() {
             }
           }}
         >
-          <span className="logo-shell">
-            <Image
-              src="/images/ak-logo.png"
-              alt="AK logo"
-              width={64}
-              height={64}
-              className="logo-shell-img"
-              priority
-            />
-          </span>
+          <LogoShell />
+
         </button>
 
         {/* Desktop links */}
