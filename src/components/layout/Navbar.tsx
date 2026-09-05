@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
+import Image from "next/image";
 import { Menu, X, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { navLinks } from "@/data/navigation";
@@ -32,20 +32,39 @@ export function Navbar() {
     <header
       className={cn(
         "fixed top-0 left-0 right-0 z-50 transition-all duration-300",
-        scrolled ? "bg-background/95 border-b border-border shadow-sm" : "bg-transparent",
+        scrolled
+          ? "bg-background/98 border-b border-border/80 shadow-sm backdrop-blur-md"
+          : "bg-background/60 border-b border-border/30 backdrop-blur-md",
       )}
     >
       {/* bar-shell has NO max-width — that is what keeps the logo pinned to the
           far left and the controls to the far right when the page is zoomed
           out. A max-w container pulled them both into the middle. */}
       <nav className="bar-shell h-16">
-        {/* Logo / Name */}
-        <Link
-          href="/"
-          className="text-lg font-bold tracking-tight text-foreground hover:text-primary transition-colors"
+        {/* Logo / Name — click smooth-scrolls to top on home, navigates to / from other pages */}
+        <button
+          type="button"
+          aria-label="Akash Kachhadiya — back to top"
+          className="flex items-center focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-[0.6rem]"
+          onClick={() => {
+            if (window.location.pathname === "/") {
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            } else {
+              window.location.href = "/#hero";
+            }
+          }}
         >
-          AK
-        </Link>
+          <span className="logo-shell">
+            <Image
+              src="/images/ak-logo.png"
+              alt="AK logo"
+              width={64}
+              height={64}
+              className="logo-shell-img"
+              priority
+            />
+          </span>
+        </button>
 
         {/* Desktop links */}
         <ul className="hidden lg:flex items-center gap-6">

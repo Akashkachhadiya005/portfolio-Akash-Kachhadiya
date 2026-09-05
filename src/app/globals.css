@@ -786,6 +786,9 @@ body {
      once painted. */
 }
 
+/* ------------------------------------------------------------
+   THEME TOGGLE SLIDER — Smooth Rubber Ball Spring Overshoot
+   ------------------------------------------------------------ */
 .theme-pill-thumb {
   position: absolute;
   z-index: 0;
@@ -796,6 +799,7 @@ body {
   border-radius: 9999px;
   pointer-events: none;
 
+  /* Original Crisp Brand Accent Color (#964734) & 3D Glass Pill Surface */
   background-color: var(--primary);
   background-image:
     linear-gradient(
@@ -813,17 +817,13 @@ body {
     0 0 14px 1px color-mix(in srgb, var(--primary) 50%, transparent),
     0 0 26px 5px color-mix(in srgb, var(--primary) 22%, transparent);
 
-  /* `translate` is a separate property from the squash `scale`, so the two
-     animate independently without fighting over one transform string. */
-  /* Overshoot easing is what gives the thumb mass — it arrives, then settles */
+  /* Smooth rubber ball spring bounce on arrival */
   translate: calc(var(--seg, 0) * 100%) 0;
-  transition: translate 460ms cubic-bezier(0.34, 1.5, 0.42, 1);
-  /* Promoted so the slide is a compositor animation and the palette repaint
-     happening beside it cannot eat its frames. */
+  transition: translate 460ms cubic-bezier(0.34, 1.56, 0.42, 1);
   will-change: translate;
 }
 
-/* One-shot ring pulse as the thumb seats, so the change is felt, not just seen */
+/* Rubber ball seating pulse ring */
 .theme-pill-pulse {
   position: absolute;
   inset: 0;
@@ -2677,4 +2677,227 @@ select,
   background-color: var(--background);
   mix-blend-mode: multiply;
   opacity: 0.4;
+}
+
+/* ============================================================
+   NAVBAR LOGO CONTAINER — animated aurora capsule.
+
+   All animation lives on ::before (gradient field) and ::after (rim glow).
+   No extra DOM nodes, no overflow bleed, no z-index fights.
+
+   Layer order inside .logo-shell (back → front):
+     ::before   z-index 0   the drifting aurora gradient field
+     ::after    z-index 1   the pulsing accent rim / outer glow
+     .logo-shell-img  z-index 2   the AK mark — always on top
+
+   The animations run ALWAYS (not just on hover).
+   Hover adds a lift + stronger glow shadow.
+   Reduced-motion: keep container & border, freeze all animation.
+
+   @property registrations allow the custom-prop keyframes to interpolate
+   smoothly in Chrome/Edge/Safari. Browsers without @property support see
+   a hard-jump; it degrades gracefully.
+   ============================================================ */
+@property --ls-x {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 30%;
+}
+@property --ls-y {
+  syntax: "<percentage>";
+  inherits: false;
+  initial-value: 40%;
+}
+@property --ls-a {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+/* ---- HOST ---- */
+.logo-shell {
+  /* inline-flex keeps it tightly wrapped around the image */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  isolation: isolate;
+  border-radius: 0.6rem;
+  /* No padding — frame hugs the image. The 3D depth comes from shadows. */
+  padding: 3px;
+  /* The host's own background: dark teal in dark mode, near-white in light. */
+  background-color: color-mix(in srgb, var(--card) 90%, transparent);
+  /* 3D lifted-card look: thick bottom edge (material thickness) + cast shadow */
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.18),
+    0 3px 0 -1px color-mix(in srgb, var(--accent) 30%, #000),
+    0 5px 12px -4px rgb(0 0 0 / 0.55),
+    0 0 0 1px color-mix(in srgb, var(--accent) 28%, transparent);
+  transition:
+    transform 220ms cubic-bezier(0.22, 1.1, 0.3, 1),
+    box-shadow 220ms ease;
+}
+
+/* ---- LAYER 1: drifting aurora gradient field (::before) ---- */
+.logo-shell::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  pointer-events: none;
+
+  /* Light mode: gentle teal shimmer */
+  background:
+    radial-gradient(
+      ellipse 110% 110% at var(--ls-x, 30%) var(--ls-y, 40%),
+      color-mix(in srgb, var(--accent) 28%, transparent) 0%,
+      color-mix(in srgb, var(--accent) 10%, transparent) 45%,
+      transparent 72%
+    ),
+    radial-gradient(
+      ellipse 80% 80% at 75% 70%,
+      color-mix(in srgb, var(--secondary) 18%, transparent) 0%,
+      transparent 62%
+    );
+
+  /* ALWAYS animating — not gated on :hover */
+  animation: ls-drift 9s ease-in-out infinite alternate;
+}
+
+/* Dark mode: vivid teal-on-deepest-teal glow */
+.dark .logo-shell::before {
+  background:
+    radial-gradient(
+      ellipse 110% 110% at var(--ls-x, 30%) var(--ls-y, 40%),
+      color-mix(in srgb, var(--accent) 65%, transparent) 0%,
+      color-mix(in srgb, var(--accent) 28%, transparent) 40%,
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 80% 80% at 75% 70%,
+      color-mix(in srgb, var(--secondary) 45%, transparent) 0%,
+      transparent 58%
+    );
+}
+
+/* ---- LAYER 2: pulsing rim glow (::after) ---- */
+/* Uses box-shadow so it paints outside the border-box without any DOM bleed.
+   The border itself is drawn on the host via outline so it never covers ::before. */
+.logo-shell::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+  pointer-events: none;
+  /* The rim is a box-shadow drawn INWARD — sits on top of the gradient,
+     below the image, never escapes layout. */
+  box-shadow:
+    inset 0 0 0 1.5px color-mix(in srgb, var(--accent) 55%, transparent),
+    inset 0 0 8px 0 color-mix(in srgb, var(--accent) 20%, transparent);
+  animation: ls-rim 4s ease-in-out infinite;
+}
+
+.dark .logo-shell::after {
+  box-shadow:
+    inset 0 0 0 1.5px color-mix(in srgb, var(--accent) 80%, transparent),
+    inset 0 0 12px 2px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+/* ---- IMAGE — always above both pseudo layers ---- */
+.logo-shell-img {
+  position: relative;
+  z-index: 2;
+  display: block;
+  width: 3.25rem; /* 52px — fits inside h-16 bar with room to breathe */
+  height: 3.25rem;
+  object-fit: contain;
+  /* Subtle shadow so the mark lifts off the glowing field */
+  filter: drop-shadow(0 2px 6px rgb(0 0 0 / 0.35));
+}
+
+/* ---- HOVER state: lift + deeper 3D shadow ---- */
+.logo-shell:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.22),
+    0 6px 0 -1px color-mix(in srgb, var(--accent) 30%, #000),
+    0 10px 22px -6px rgb(0 0 0 / 0.65),
+    0 0 0 1px color-mix(in srgb, var(--accent) 50%, transparent),
+    0 0 18px -2px color-mix(in srgb, var(--accent) 40%, transparent);
+}
+
+.logo-shell:active {
+  transform: translateY(2px);
+  box-shadow:
+    inset 0 2px 4px rgb(0 0 0 / 0.3),
+    0 1px 0 -1px color-mix(in srgb, var(--accent) 20%, #000),
+    0 2px 6px -3px rgb(0 0 0 / 0.4);
+}
+
+/* ---- KEYFRAMES ---- */
+
+/* Hot-spot drifts to five waypoints, then reverses (alternate) */
+@keyframes ls-drift {
+  0% {
+    --ls-x: 22%;
+    --ls-y: 30%;
+  }
+  20% {
+    --ls-x: 70%;
+    --ls-y: 24%;
+  }
+  40% {
+    --ls-x: 78%;
+    --ls-y: 72%;
+  }
+  60% {
+    --ls-x: 26%;
+    --ls-y: 78%;
+  }
+  80% {
+    --ls-x: 55%;
+    --ls-y: 45%;
+  }
+  100% {
+    --ls-x: 22%;
+    --ls-y: 30%;
+  }
+}
+
+/* Rim breathes: dim → bright → dim */
+@keyframes ls-rim {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* ---- REDUCED MOTION ---- */
+@media (prefers-reduced-motion: reduce) {
+  .logo-shell::before {
+    animation: none;
+    /* Keep the gradient visible but static */
+    --ls-x: 50%;
+    --ls-y: 45%;
+  }
+  .logo-shell::after {
+    animation: none;
+    opacity: 0.7;
+  }
+  .logo-shell,
+  .logo-shell:hover,
+  .logo-shell:active {
+    transform: none;
+    /* Keep the 3D shadow even without motion */
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.18),
+      0 3px 0 -1px color-mix(in srgb, var(--accent) 30%, #000),
+      0 5px 12px -4px rgb(0 0 0 / 0.55),
+      0 0 0 1px color-mix(in srgb, var(--accent) 28%, transparent);
+  }
 }
