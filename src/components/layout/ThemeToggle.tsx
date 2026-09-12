@@ -14,17 +14,6 @@ function resolveTarget(value: string): "dark" | "light" {
   return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 }
 
-/**
- * Theme-switch: circular clip-path reveal from the pressed icon.
- *
- * The origin is captured on pointerdown -- the first event that fires on any
- * pointing device (mouse, touch, stylus). currentTarget is always the <button>
- * (not the SVG child) because React normalises this. The coordinates are stored
- * as plain numbers so no element reference crosses the async transition boundary.
- *
- * The new snapshot clips in via a single JS Web Animations call. The old
- * snapshot sits still below it (animation:none in CSS). No fading, no flash.
- */
 function switchTheme(apply: () => void, ox: number, oy: number) {
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     apply();
@@ -65,6 +54,33 @@ function switchTheme(apply: () => void, ox: number, oy: number) {
   });
 }
 
+/**
+ * Extract the best available (x, y) origin from any pointer/click event.
+ * Priority: pointerdown coords > click native event > button getBCR centre.
+ * This covers every scenario: mouse, touch, stylus, first load, any device.
+ */
+function getOrigin(
+  stored: { x: number; y: number } | null,
+  clickEvent: React.MouseEvent<HTMLButtonElement>,
+): { x: number; y: number } {
+  // 1. Best: stored from onPointerDown (fires before onClick on all devices)
+  if (stored && (stored.x !== 0 || stored.y !== 0)) {
+    return stored;
+  }
+
+  // 2. Fallback: nativeEvent from the click itself
+  //    MouseEvent always has clientX/Y. TouchEvent (via click synthesis) does too.
+  const ev = clickEvent.nativeEvent;
+  if (ev.clientX !== 0 || ev.clientY !== 0) {
+    return { x: ev.clientX, y: ev.clientY };
+  }
+
+  // 3. Last resort for keyboard activation: button bounding rect centre
+  const btn = clickEvent.currentTarget;
+  const r = btn.getBoundingClientRect();
+  return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+}
+
 const OPTIONS = [
   { value: "light", icon: Sun, label: "Light mode" },
   { value: "dark", icon: Moon, label: "Dark mode" },
@@ -103,37 +119,11 @@ export function ThemeToggle() {
           key={value}
           type="button"
           onPointerDown={(e) => {
-            // e.currentTarget is always the <button> (React normalises this).
-            // Capture the centre before any async work so the coord is exact.
-            const r = e.currentTarget.getBoundingClientRect();
-            originRef.current = {
-              x: r.left + r.width / 2,
-              y: r.top + r.height / 2,
-            };
+            originRef.current = { x: e.clientX, y: e.clientY };
           }}
-          onClick={() => {
-            const o = originRef.current;
+          onClick={(e) => {
+            const { x: ox, y: oy } = getOrigin(originRef.current, e);
             originRef.current = null;
-
-            let ox: number;
-            let oy: number;
-
-            if (o) {
-              ox = o.x;
-              oy = o.y;
-            } else {
-              // Keyboard activation: use the pill centre
-              const pill = document.querySelector<HTMLElement>(".theme-pill");
-              if (pill) {
-                const r = pill.getBoundingClientRect();
-                ox = r.left + r.width / 2;
-                oy = r.top + r.height / 2;
-              } else {
-                ox = window.innerWidth - 60;
-                oy = 32;
-              }
-            }
-
             setPending(value);
             switchTheme(() => setTheme(value), ox, oy);
           }}
