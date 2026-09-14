@@ -2071,11 +2071,13 @@ select,
 }
 
 /* ============================================================
-   SOCIAL DOTS "” footer Connect row.
+   SOCIAL DOTS — footer Connect row.
    Circular glass wells that lift and light up on hover. 44px so they clear the
    WCAG 2.5.8 / Apple HIG minimum touch target.
    ============================================================ */
 .social-dot {
+  position: relative;
+  isolation: isolate;
   display: grid;
   place-items: center;
   width: 2.75rem;
@@ -2094,18 +2096,29 @@ select,
     inset 0 1px 0 rgb(255 255 255 / 0.4),
     0 2px 0 -1px var(--border),
     0 8px 16px -8px rgb(0 0 0 / 0.3);
-  /* No box-shadow transition: six of these sit in the footer, and interpolating
-     their shadows repainted that whole strip on hover and during scroll. */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  will-change: transform;
+  transform: translateZ(0);
   transition:
     transform 200ms cubic-bezier(0.22, 1.1, 0.3, 1),
     color 200ms ease,
     border-color 200ms ease;
 }
 
+/* Invisible hit-area cushion: prevents cursor edge hover chatter and frame drops */
+.social-dot::before {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: inherit;
+  pointer-events: auto;
+}
+
 .social-dot:hover {
   color: var(--foreground);
   border-color: color-mix(in srgb, var(--accent) 60%, transparent);
-  transform: translateY(-3px);
+  transform: translateY(-3px) translateZ(0);
   box-shadow:
     inset 0 1px 0 rgb(255 255 255 / 0.55),
     0 4px 0 -1px color-mix(in srgb, var(--accent) 26%, var(--border)),
@@ -2113,7 +2126,7 @@ select,
 }
 
 .social-dot:active {
-  transform: translateY(1px);
+  transform: translateY(1px) translateZ(0);
   box-shadow: inset 0 2px 5px rgb(0 0 0 / 0.22);
 }
 
@@ -2131,7 +2144,7 @@ select,
 }
 
 /* ============================================================
-   FLOATING HOME BUTTON "” appears once the page has been scrolled.
+   FLOATING HOME BUTTON — appears once the page has been scrolled.
 
    Glossy dome: a chrome ring, a bright specular cap on the upper half, a
    coloured core, and a cast shadow underneath. The ring counter-rotates its
@@ -2151,6 +2164,8 @@ select,
   cursor: pointer;
   border: none;
   padding: 0;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 
   /* Chrome bezel */
   background:
@@ -2169,26 +2184,33 @@ select,
     0 10px 24px -6px rgb(0 0 0 / 0.45),
     0 0 26px -4px color-mix(in srgb, var(--accent) 50%, transparent);
 
-  /* Hidden state "” translateX keeps it centred while it slides */
-  transform: translateX(-50%) translateY(140%) scale(0.8);
+  /* Hidden state — translateX keeps it centred while it slides */
+  transform: translateX(-50%) translateY(140%) scale(0.8) translateZ(0);
   opacity: 0;
   pointer-events: none;
-  /* This element is FIXED and visible for most of the page. A transitioning
-     box-shadow on a fixed layer repaints on every scrolled frame, which is why
-     the area around the contact form and footer stuttered worst. */
+  will-change: transform, opacity;
   transition:
     transform 420ms cubic-bezier(0.22, 1.3, 0.35, 1),
     opacity 300ms ease;
 }
 
+/* Hit boundary cushion prevents cursor boundary chatter */
+.home-fab::after {
+  content: "";
+  position: absolute;
+  inset: -10px;
+  border-radius: inherit;
+  pointer-events: auto;
+}
+
 .home-fab[data-visible="1"] {
-  transform: translateX(-50%) translateY(0) scale(1);
+  transform: translateX(-50%) translateY(0) scale(1) translateZ(0);
   opacity: 1;
   pointer-events: auto;
 }
 
 .home-fab[data-visible="1"]:hover {
-  transform: translateX(-50%) translateY(-5px) scale(1.06);
+  transform: translateX(-50%) translateY(-5px) scale(1.06) translateZ(0);
   box-shadow:
     inset 0 2px 0 rgb(255 255 255 / 0.85),
     inset 0 -2px 4px rgb(0 0 0 / 0.3),
@@ -2199,7 +2221,7 @@ select,
 }
 
 .home-fab[data-visible="1"]:active {
-  transform: translateX(-50%) translateY(2px) scale(0.97);
+  transform: translateX(-50%) translateY(2px) scale(0.97) translateZ(0);
   box-shadow:
     inset 0 3px 8px rgb(0 0 0 / 0.4),
     0 0 0 3px color-mix(in srgb, var(--card) 80%, transparent),

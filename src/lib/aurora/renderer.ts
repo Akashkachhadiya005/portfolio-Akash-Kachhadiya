@@ -219,10 +219,9 @@ export function createAuroraRenderer(
     setPointer(x, y) {
       pointerX = x;
       pointerY = y;
-      // When frozen the loop still runs, so the pointer is picked up next frame.
-      // When stopped, render once so a paused field still responds.
-      if (!running && !disposed && bufferW > 0) {
-        draw(frozen ?? elapsed);
+      // If stopped (e.g. hero is offscreen), do not draw or invoke GPU shader on pointer move.
+      if (frozen !== null && !disposed && bufferW > 0) {
+        draw(frozen);
       }
     },
 

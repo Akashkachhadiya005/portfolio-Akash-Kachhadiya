@@ -412,64 +412,62 @@ function NetworkScene({
       // pen and mouse alike, so naming it here makes the label instant on touch.
       setHovered(index);
       touchGrabRef.current = e.pointerType !== "mouse";
+
+      function onMove(pe: PointerEvent) {
+        const drag = dragRef.current;
+        if (!drag) return;
+        const node = nodesRef.current[drag.index];
+        const { camZ, halfTan, halfH } = projRef.current;
+        // px per world unit AT THIS NODE'S DEPTH, so the ball tracks the cursor
+        // 1:1 instead of drifting by the perspective foreshortening factor.
+        const k = halfH / ((camZ - node.pos.z) * halfTan);
+        if (!Number.isFinite(k) || k <= 0) return;
+        const dx = (pe.clientX - drag.lastX) / k;
+        const dy = -(pe.clientY - drag.lastY) / k;
+        node.pos.x += dx;
+        node.pos.y += dy;
+        drag.vx = dx;
+        drag.vy = dy;
+        drag.lastX = pe.clientX;
+        drag.lastY = pe.clientY;
+      }
+
+      function onUp() {
+        window.removeEventListener("pointermove", onMove);
+        window.removeEventListener("pointerup", onUp);
+        window.removeEventListener("pointercancel", onUp);
+        document.body.style.userSelect = "";
+        document.body.style.cursor = "";
+        const drag = dragRef.current;
+        if (drag) {
+          const node = nodesRef.current[drag.index];
+          const cap = 0.03;
+          node.vel.set(
+            THREE.MathUtils.clamp(drag.vx * 0.3, -cap, cap),
+            THREE.MathUtils.clamp(drag.vy * 0.3, -cap, cap),
+            node.vel.z,
+          );
+          if (node.vel.length() < MIN_SPEED) {
+            const a = Math.random() * Math.PI * 2;
+            node.vel.set(Math.cos(a) * MIN_SPEED, Math.sin(a) * MIN_SPEED, node.vel.z);
+          }
+        }
+        dragRef.current = null;
+
+        // A finger has no pointerleave, so the label would otherwise stay on
+        // screen after the tap. A mouse keeps it until the cursor actually leaves.
+        if (touchGrabRef.current) {
+          touchGrabRef.current = false;
+          setHovered(null);
+        }
+      }
+
+      window.addEventListener("pointermove", onMove, { passive: true });
+      window.addEventListener("pointerup", onUp);
+      window.addEventListener("pointercancel", onUp);
     },
     [onGrab],
   );
-
-  useEffect(() => {
-    function onMove(e: PointerEvent) {
-      const drag = dragRef.current;
-      if (!drag) return;
-      const node = nodesRef.current[drag.index];
-      const { camZ, halfTan, halfH } = projRef.current;
-      // px per world unit AT THIS NODE'S DEPTH, so the ball tracks the cursor
-      // 1:1 instead of drifting by the perspective foreshortening factor.
-      const k = halfH / ((camZ - node.pos.z) * halfTan);
-      if (!Number.isFinite(k) || k <= 0) return;
-      const dx = (e.clientX - drag.lastX) / k;
-      const dy = -(e.clientY - drag.lastY) / k;
-      node.pos.x += dx;
-      node.pos.y += dy;
-      drag.vx = dx;
-      drag.vy = dy;
-      drag.lastX = e.clientX;
-      drag.lastY = e.clientY;
-    }
-    function onUp() {
-      document.body.style.userSelect = "";
-      document.body.style.cursor = "";
-      const drag = dragRef.current;
-      if (drag) {
-        const node = nodesRef.current[drag.index];
-        const cap = 0.03;
-        node.vel.set(
-          THREE.MathUtils.clamp(drag.vx * 0.3, -cap, cap),
-          THREE.MathUtils.clamp(drag.vy * 0.3, -cap, cap),
-          node.vel.z,
-        );
-        if (node.vel.length() < MIN_SPEED) {
-          const a = Math.random() * Math.PI * 2;
-          node.vel.set(Math.cos(a) * MIN_SPEED, Math.sin(a) * MIN_SPEED, node.vel.z);
-        }
-      }
-      dragRef.current = null;
-
-      // A finger has no pointerleave, so the label would otherwise stay on
-      // screen after the tap. A mouse keeps it until the cursor actually leaves.
-      if (touchGrabRef.current) {
-        touchGrabRef.current = false;
-        setHovered(null);
-      }
-    }
-    window.addEventListener("pointermove", onMove);
-    window.addEventListener("pointerup", onUp);
-    window.addEventListener("pointercancel", onUp);
-    return () => {
-      window.removeEventListener("pointermove", onMove);
-      window.removeEventListener("pointerup", onUp);
-      window.removeEventListener("pointercancel", onUp);
-    };
-  }, []);
 
   // ── Physics + render loop ───────────────────────────────────────────────
   //
@@ -863,10 +861,7 @@ export default function SkillNetwork() {
   // which only happens on resize / rotation, not per frame.
   const [tilePx, setTilePx] = useState(TILE_PX);
   const [isNearViewport, setIsNearViewport] = useState(false);
-  /* Also paused while the page is being scrolled. The physics loop drives 28
-   * <Html> tiles, so it is the second most expensive thing on the page, and
-   * nobody drags a ball mid-flick. Frames go to the scroll instead. */
-  const [isScrolling, setIsScrolling] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const sparkRef = useRef<HTMLDivElement>(null);
   const lightningRef = useRef<LightningHandle | null>(null);
@@ -875,25 +870,20 @@ export default function SkillNetwork() {
   const cloudSlots = useRef<(HTMLDivElement | null)[]>([]);
   const activeSlot = useRef(-1);
 
-  /**
-   * Reveals one skill's cloud logo.
-   *
-   * IMPERATIVE ON PURPOSE — do not turn this into React state. A re-render of
-   * <Canvas> re-runs the node list, and inline callback refs detach (null) then
-   * reattach. LightningSync would see a null tile for that one frame, call
-   * clear(), and the bolts would blink out mid-drag. So all 21 cloud layers are
-   * rendered once and kept `display: none`; only the display flag flips.
-   * `display: none` also means the blurred layers are never rasterised until
-   * their skill is actually grabbed.
-   */
   // Track the frame and resize the balls to suit it. ResizeObserver reports the
   // layout box, which is exactly what we want here.
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
     const apply = () => {
-      const next = tileSizeFor(el.clientWidth, el.clientHeight, skillNodes.length);
-      setTilePx((prev) => (prev === next ? prev : next));
+      // If container is inside display: none (e.g. mobile duplicate on desktop),
+      // offsetWidth is 0. Do NOT mount WebGL or 3D canvas for the hidden instance.
+      const isVisibleInLayout = el.offsetWidth > 0 || el.offsetHeight > 0;
+      setIsMounted(isVisibleInLayout);
+      if (isVisibleInLayout) {
+        const next = tileSizeFor(el.clientWidth, el.clientHeight, skillNodes.length);
+        setTilePx((prev) => (prev === next ? prev : next));
+      }
     };
     apply();
     const ro = new ResizeObserver(apply);
@@ -909,26 +899,9 @@ export default function SkillNetwork() {
     );
     io.observe(el);
 
-    let idle = 0;
-    let scrolling = false;
-    const onScroll = () => {
-      if (!scrolling) {
-        scrolling = true;
-        setIsScrolling(true);
-      }
-      window.clearTimeout(idle);
-      idle = window.setTimeout(() => {
-        scrolling = false;
-        setIsScrolling(false);
-      }, 180);
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-
     return () => {
       ro.disconnect();
       io.disconnect();
-      window.clearTimeout(idle);
-      window.removeEventListener("scroll", onScroll);
     };
   }, []);
 
@@ -957,84 +930,88 @@ export default function SkillNetwork() {
       data-skill-active={isNearViewport ? "true" : "false"}
       className="relative h-full w-full select-none"
     >
-      {/* Storm flash backdrop. First in DOM so it paints BEHIND the balls;
-          opacity is driven per frame by LightningSync. */}
-      <div
-        ref={backdropRef}
-        aria-hidden="true"
-        className="storm-flash pointer-events-none absolute inset-0 z-0"
-        style={{ opacity: 0 }}
-      />
-
-      {/* Grabbed skill's mark, huge and cloud-like, behind the balls.
-          The logo is only a MASK — the fill is the site's own gradient, so no
-          vendor brand colour can appear. */}
-      <div
-        ref={cloudRef}
-        aria-hidden="true"
-        className="cloud-logo z-0"
-        style={{ opacity: 0, containerType: "inline-size" }}
-      >
-        {skillNodes.map((skill, i) => (
+      {isMounted && (
+        <>
+          {/* Storm flash backdrop. First in DOM so it paints BEHIND the balls;
+              opacity is driven per frame by LightningSync. */}
           <div
-            key={skill.name}
-            ref={(el) => {
-              cloudSlots.current[i] = el;
-            }}
-            className="cloud-logo-drift"
-            style={{ display: "none" }}
+            ref={backdropRef}
+            aria-hidden="true"
+            className="storm-flash pointer-events-none absolute inset-0 z-0"
+            style={{ opacity: 0 }}
+          />
+
+          {/* Grabbed skill's mark, huge and cloud-like, behind the balls.
+              The logo is only a MASK — the fill is the site's own gradient, so no
+              vendor brand colour can appear. */}
+          <div
+            ref={cloudRef}
+            aria-hidden="true"
+            className="cloud-logo z-0"
+            style={{ opacity: 0, containerType: "inline-size" }}
           >
-            {skill.logo ? (
-              <>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={skill.logo}
-                  alt=""
-                  aria-hidden="true"
-                  className="cloud-logo-img cloud-logo-haze"
-                  draggable={false}
-                />
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={skill.logo}
-                  alt=""
-                  aria-hidden="true"
-                  className="cloud-logo-img cloud-logo-core"
-                  draggable={false}
-                />
-              </>
-            ) : (
-              <span className="cloud-logo-text">{skill.name}</span>
-            )}
+            {skillNodes.map((skill, i) => (
+              <div
+                key={skill.name}
+                ref={(el) => {
+                  cloudSlots.current[i] = el;
+                }}
+                className="cloud-logo-drift"
+                style={{ display: "none" }}
+              >
+                {skill.logo ? (
+                  <>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={skill.logo}
+                      alt=""
+                      aria-hidden="true"
+                      className="cloud-logo-img cloud-logo-haze"
+                      draggable={false}
+                    />
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={skill.logo}
+                      alt=""
+                      aria-hidden="true"
+                      className="cloud-logo-img cloud-logo-core"
+                      draggable={false}
+                    />
+                  </>
+                ) : (
+                  <span className="cloud-logo-text">{skill.name}</span>
+                )}
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
 
-      {/* Collision sparks layer */}
-      <div ref={sparkRef} className="pointer-events-none absolute inset-0 z-30" />
+          {/* Collision sparks layer */}
+          <div ref={sparkRef} className="pointer-events-none absolute inset-0 z-30" />
 
-      {/* Photo-realistic lightning layer (portalled to body, fixed overlay) */}
-      {isNearViewport && <LightningCanvas handleRef={lightningRef} />}
+          {/* Photo-realistic lightning layer (portalled to body, fixed overlay) */}
+          {isNearViewport && <LightningCanvas handleRef={lightningRef} />}
 
-      <Canvas
-        frameloop={isNearViewport ? "always" : "never"}
-        camera={{ position: [0, 0, 7], fov: 50 }}
-        dpr={[1, 1.5]}
-        gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
-        // R3F hard-codes `overflow: hidden` on its root div and spreads `style`
-        // afterwards, so this override is the only way to unclip the <Html> tiles.
-        style={{ background: "transparent", overflow: "visible" }}
-      >
-        <NetworkScene
-          containerRef={containerRef}
-          sparkRef={sparkRef}
-          lightningRef={lightningRef}
-          backdropRef={backdropRef}
-          cloudRef={cloudRef}
-          onGrab={showCloud}
-          tilePx={tilePx}
-        />
-      </Canvas>
+          <Canvas
+            frameloop={isNearViewport ? "always" : "never"}
+            camera={{ position: [0, 0, 7], fov: 50 }}
+            dpr={[1, 1.5]}
+            gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
+            // R3F hard-codes `overflow: hidden` on its root div and spreads `style`
+            // afterwards, so this override is the only way to unclip the <Html> tiles.
+            style={{ background: "transparent", overflow: "visible" }}
+          >
+            <NetworkScene
+              containerRef={containerRef}
+              sparkRef={sparkRef}
+              lightningRef={lightningRef}
+              backdropRef={backdropRef}
+              cloudRef={cloudRef}
+              onGrab={showCloud}
+              tilePx={tilePx}
+            />
+          </Canvas>
+        </>
+      )}
     </div>
   );
 }

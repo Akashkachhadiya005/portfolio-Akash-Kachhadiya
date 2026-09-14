@@ -100,6 +100,8 @@ export function usePointerField({
     // and sits behind the hero copy, so it would never see a move over the
     // headline itself.
     const onMove = (e: PointerEvent) => {
+      // If hero has scrolled completely out of view above the screen, do not track or tick
+      if (box.top + box.height < 0) return;
       const nx = (e.clientX - box.left) / box.width - 0.5;
       const ny = (e.clientY - box.top) / box.height - 0.5;
       targetX = Math.max(-1, Math.min(1, nx * 2));
@@ -114,11 +116,20 @@ export function usePointerField({
       start();
     };
 
+    let scrollRaf = 0;
+    const onScroll = () => {
+      if (scrollRaf) return;
+      scrollRaf = requestAnimationFrame(() => {
+        scrollRaf = 0;
+        measure();
+      });
+    };
+
     window.addEventListener("pointermove", onMove, { passive: true });
     window.addEventListener("pointerdown", onMove, { passive: true });
     window.addEventListener("pointerleave", onLeave);
     window.addEventListener("pointercancel", onLeave);
-    window.addEventListener("scroll", measure, { passive: true });
+    window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", measure, { passive: true });
 
     return () => {
@@ -126,9 +137,10 @@ export function usePointerField({
       window.removeEventListener("pointerdown", onMove);
       window.removeEventListener("pointerleave", onLeave);
       window.removeEventListener("pointercancel", onLeave);
-      window.removeEventListener("scroll", measure);
+      window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", measure);
       cancelAnimationFrame(raf);
+      if (scrollRaf) cancelAnimationFrame(scrollRaf);
     };
   }, [enabled, ease]);
 

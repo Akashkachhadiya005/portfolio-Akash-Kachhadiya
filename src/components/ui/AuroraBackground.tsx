@@ -61,8 +61,10 @@ export function AuroraBackground({ className, intensity = 1 }: AuroraBackgroundP
   const hostRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const rendererRef = useRef<AuroraRenderer | null>(null);
+  const isNearViewportRef = useRef(true);
 
   const onPointer = useCallback((x: number, y: number) => {
+    if (!isNearViewportRef.current) return;
     rendererRef.current?.setPointer(x, y);
   }, []);
 
@@ -140,6 +142,7 @@ export function AuroraBackground({ className, intensity = 1 }: AuroraBackgroundP
     const intersectionObserver = new IntersectionObserver(
       ([entry]) => {
         isNearViewport = entry?.isIntersecting ?? false;
+        isNearViewportRef.current = isNearViewport;
         syncLoop();
       },
       { rootMargin: "160px 0px" },
