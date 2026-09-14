@@ -25,6 +25,11 @@ export const metadata: Metadata = {
     default: "Akash Kachhadiya — AI/ML Engineer",
     template: "%s | Akash Kachhadiya",
   },
+  icons: {
+    icon: "/images/ak-logo.png?v=2",
+    shortcut: "/images/ak-logo.png?v=2",
+    apple: "/images/ak-logo.png?v=2",
+  },
   description:
     "AI/ML Engineer building intelligent, cloud-native solutions. AWS Certified (×3). Turning data into real business impact with Python, AWS & Generative AI.",
   metadataBase: new URL(siteUrl),

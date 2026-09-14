@@ -71,13 +71,14 @@ export function LogoShell() {
       ))}
       <span className="logo-ring" aria-hidden="true" />
       <Image
-        src="/images/ak-logo.png"
+        src="/images/ak-logo.png?v=2"
         alt="AK logo"
         width={64}
         height={64}
         className="logo-shell-img"
         priority
         loading="eager"
+        unoptimized
       />
     </span>
   );

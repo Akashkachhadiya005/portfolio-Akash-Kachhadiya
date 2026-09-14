@@ -1,11 +1,21 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { useTheme } from "next-themes";
 import { Sun, Moon, Monitor } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useMounted } from "@/hooks/useMounted";
 
+/**
+ * Aurora Iris Mode Change — Precision Physical Light Bloom
+ *
+ * When the visitor clicks Sun or Moon:
+ * 1. An organic luminous ring & volumetric ray bloom opens out from the EXACT center of the clicked icon.
+ * 2. It begins at transform: scale(0) (a tiny microscopic dot right at the icon button).
+ * 3. It sweeps smoothly across the entire viewport using GPU-accelerated transforms (no layout, no paint).
+ * 4. At 320ms (when the wavefront crosses mid-screen), the palette flips seamlessly.
+ * 5. At 840ms, the transition layer is cleanly removed from the DOM.
+ */
 const IRIS_FLIP_AT_MS = 320;
 const IRIS_LIFETIME_MS = 840;
 
@@ -14,71 +24,67 @@ function resolveTarget(value: string): "dark" | "light" {
   return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 }
 
-function switchTheme(apply: () => void, ox: number, oy: number) {
+function switchTheme(apply: () => void, originEl: HTMLElement, value: string) {
+  if (typeof window === "undefined" || typeof document === "undefined") {
+    apply();
+    return;
+  }
+
+  // If user prefers reduced motion, switch immediately without animation
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     apply();
     return;
   }
 
-  if (!("startViewTransition" in document)) {
-    apply();
-    return;
-  }
+  // Remove any previous active iris transition if user clicks rapidly
+  const existing = document.querySelector(".theme-iris");
+  if (existing) existing.remove();
 
-  const endRadius = Math.hypot(
-    Math.max(ox, window.innerWidth - ox),
-    Math.max(oy, window.innerHeight - oy),
-  );
+  // Measure the clicked icon button with exact sub-pixel precision
+  const r = originEl.getBoundingClientRect();
+  const x = r.left + r.width / 2;
+  const y = r.top + r.height / 2;
 
-  const doc = document as unknown as {
-    startViewTransition: (cb: () => void) => { ready: Promise<void> };
-  };
+  // Calculate radius needed to reach the furthest corner of the screen
+  const radius =
+    Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y)) + 24;
 
-  const transition = doc.startViewTransition(apply);
+  const iris = document.createElement("div");
+  iris.className = "theme-iris";
+  iris.dataset.to = resolveTarget(value);
+  iris.setAttribute("aria-hidden", "true");
 
-  transition.ready.then(() => {
-    document.documentElement.animate(
-      {
-        clipPath: [
-          `circle(0px at ${ox}px ${oy}px)`,
-          `circle(${endRadius}px at ${ox}px ${oy}px)`,
-        ],
-      },
-      {
-        duration: 500,
-        easing: "cubic-bezier(0.4, 0, 0.2, 1)",
-        fill: "both",
-        pseudoElement: "::view-transition-new(root)",
-      },
-    );
+  // Lock the origin to the exact center of the clicked button
+  iris.style.setProperty("--ix", `${x}px`);
+  iris.style.setProperty("--iy", `${y}px`);
+  iris.style.setProperty("--is", `${(radius * 2) / 320}`);
+
+  // Capture outgoing background for smooth palette settling
+  const from = getComputedStyle(document.documentElement)
+    .getPropertyValue("--background")
+    .trim();
+  if (from) iris.style.setProperty("--iris-from", from);
+
+  iris.innerHTML =
+    '<span class="theme-iris-tint"></span>' +
+    '<span class="theme-iris-rays"></span>' +
+    '<span class="theme-iris-veil"></span>' +
+    '<span class="theme-iris-ring"></span>';
+
+  document.body.appendChild(iris);
+
+  // Trigger animation on next frame so it animates from scale(0) tiny dot to full screen
+  requestAnimationFrame(() => {
+    iris.classList.add("theme-iris-run");
   });
-}
 
-/**
- * Extract the best available (x, y) origin from any pointer/click event.
- * Priority: pointerdown coords > click native event > button getBCR centre.
- * This covers every scenario: mouse, touch, stylus, first load, any device.
- */
-function getOrigin(
-  stored: { x: number; y: number } | null,
-  clickEvent: React.MouseEvent<HTMLButtonElement>,
-): { x: number; y: number } {
-  // 1. Best: stored from onPointerDown (fires before onClick on all devices)
-  if (stored && (stored.x !== 0 || stored.y !== 0)) {
-    return stored;
-  }
+  // Flip palette at the exact moment the wavefront is mid-screen
+  window.setTimeout(apply, IRIS_FLIP_AT_MS);
 
-  // 2. Fallback: nativeEvent from the click itself
-  //    MouseEvent always has clientX/Y. TouchEvent (via click synthesis) does too.
-  const ev = clickEvent.nativeEvent;
-  if (ev.clientX !== 0 || ev.clientY !== 0) {
-    return { x: ev.clientX, y: ev.clientY };
-  }
-
-  // 3. Last resort for keyboard activation: button bounding rect centre
-  const btn = clickEvent.currentTarget;
-  const r = btn.getBoundingClientRect();
-  return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+  // Clean up layer when animation completes
+  window.setTimeout(() => {
+    iris.remove();
+  }, IRIS_LIFETIME_MS);
 }
 
 const OPTIONS = [
@@ -91,7 +97,6 @@ export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
   const mounted = useMounted();
   const [pending, setPending] = useState<string | null>(null);
-  const originRef = useRef<{ x: number; y: number } | null>(null);
 
   if (!mounted) {
     return <div className="h-9 w-[5.75rem]" aria-hidden />;
@@ -118,14 +123,11 @@ export function ThemeToggle() {
         <button
           key={value}
           type="button"
-          onPointerDown={(e) => {
-            originRef.current = { x: e.clientX, y: e.clientY };
-          }}
           onClick={(e) => {
-            const { x: ox, y: oy } = getOrigin(originRef.current, e);
-            originRef.current = null;
+            if (value === selected) return;
             setPending(value);
-            switchTheme(() => setTheme(value), ox, oy);
+            // Pass the exact clicked button element to anchor the tiny dot origin
+            switchTheme(() => setTheme(value), e.currentTarget, value);
           }}
           aria-label={label}
           aria-pressed={selected === value}

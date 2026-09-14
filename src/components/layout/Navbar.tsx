@@ -81,7 +81,7 @@ export function Navbar() {
               rel="noopener noreferrer"
               /* h-9 matches the ThemeToggle's height so the two controls sit on
                  one optical line, and the pill radius matches it too. */
-              className="hidden h-9 px-4 sm:inline-flex"
+              className="hidden h-9 px-4 md:inline-flex"
             >
               <FileText className="h-4 w-4" aria-hidden="true" />
               Resume
