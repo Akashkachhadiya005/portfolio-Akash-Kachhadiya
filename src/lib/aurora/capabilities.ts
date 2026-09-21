@@ -40,8 +40,16 @@ function probeWebgl(): Capabilities["webgl"] {
       stencil: false,
       failIfMajorPerformanceCaveat: false,
     };
-    if (canvas.getContext("webgl2", opts)) return "webgl2";
-    if (canvas.getContext("webgl", opts)) return "webgl";
+    const gl2 = canvas.getContext("webgl2", opts) as WebGL2RenderingContext | null;
+    if (gl2) {
+      gl2.getExtension("WEBGL_lose_context")?.loseContext();
+      return "webgl2";
+    }
+    const gl = canvas.getContext("webgl", opts) as WebGLRenderingContext | null;
+    if (gl) {
+      gl.getExtension("WEBGL_lose_context")?.loseContext();
+      return "webgl";
+    }
     return "none";
   } catch {
     return "none";

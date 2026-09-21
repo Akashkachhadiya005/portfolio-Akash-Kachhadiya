@@ -16,6 +16,8 @@ import { Home } from "lucide-react";
  */
 export function HomeFab() {
   const ref = useRef<HTMLButtonElement>(null);
+  const releaseTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const pressStartTimeRef = useRef<number>(0);
 
   useEffect(() => {
     const el = ref.current;
@@ -29,8 +31,13 @@ export function HomeFab() {
       const next = window.scrollY > window.innerHeight * 0.75;
       if (next === visible) return;
       visible = next;
-      if (next) el.dataset.visible = "1";
-      else delete el.dataset.visible;
+      if (next) {
+        el.dataset.visible = "1";
+      } else {
+        delete el.dataset.visible;
+        delete el.dataset.pressed;
+        delete el.dataset.hovered;
+      }
     };
 
     // Coalesce bursts of scroll events into one check per frame
@@ -46,8 +53,42 @@ export function HomeFab() {
     return () => {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onScroll);
+      if (releaseTimerRef.current) {
+        clearTimeout(releaseTimerRef.current);
+      }
     };
   }, []);
+
+  const setPressed = (pressed: boolean) => {
+    const el = ref.current;
+    if (!el) return;
+
+    if (releaseTimerRef.current) {
+      clearTimeout(releaseTimerRef.current);
+      releaseTimerRef.current = null;
+    }
+
+    if (pressed) {
+      pressStartTimeRef.current = Date.now();
+      el.dataset.pressed = "1";
+      el.dataset.hovered = "1";
+    } else {
+      // Ensure that even quick taps get at least 320ms of visible, buttery rotation
+      const elapsed = Date.now() - pressStartTimeRef.current;
+      const remaining = Math.max(0, 320 - elapsed);
+      if (remaining > 0) {
+        releaseTimerRef.current = setTimeout(() => {
+          if (ref.current) {
+            delete ref.current.dataset.pressed;
+            delete ref.current.dataset.hovered;
+          }
+        }, remaining);
+      } else {
+        delete el.dataset.pressed;
+        delete el.dataset.hovered;
+      }
+    }
+  };
 
   const goHome = () => {
     // `smooth` unless the visitor asked for less motion
@@ -60,6 +101,30 @@ export function HomeFab() {
       ref={ref}
       type="button"
       onClick={goHome}
+      onPointerDown={(e) => {
+        setPressed(true);
+        if (e.pointerType !== "mouse") {
+          // Prevent mobile long-press menus from interrupting the touch
+          e.currentTarget.style.userSelect = "none";
+        }
+      }}
+      onPointerUp={() => setPressed(false)}
+      onPointerCancel={() => setPressed(false)}
+      onPointerEnter={(e) => {
+        if (e.pointerType === "mouse" && ref.current) {
+          ref.current.dataset.hovered = "1";
+        }
+      }}
+      onPointerLeave={(e) => {
+        if (ref.current) {
+          delete ref.current.dataset.hovered;
+          delete ref.current.dataset.pressed;
+        }
+      }}
+      onTouchStart={() => setPressed(true)}
+      onTouchEnd={() => setPressed(false)}
+      onTouchCancel={() => setPressed(false)}
+      onContextMenu={(e) => e.preventDefault()}
       aria-label="Back to top"
       className="home-fab"
     >

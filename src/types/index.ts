@@ -46,6 +46,7 @@ export type Certification = {
   verifyUrl?: string;
   badgeImage?: string;
   certificateImage?: string; // full cert photo — click to open (lightbox/new tab)
+  pdfUrl?: string;
   skills: string[];
   category: "AWS" | "Data Science" | "Analytics";
 };

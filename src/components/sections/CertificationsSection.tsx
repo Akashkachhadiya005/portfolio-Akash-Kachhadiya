@@ -1,12 +1,18 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "motion/react";
-import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ShieldCheck } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { certifications } from "@/data/certifications";
+import { CertificateCard3D } from "@/components/ui/CertificateCard3D";
+import { CertificateLightbox } from "@/components/ui/CertificateLightbox";
+import { FloatingBadgeModal } from "@/components/ui/FloatingBadgeModal";
+import type { Certification } from "@/types";
 
 export function CertificationsSection() {
+  const [selectedCert, setSelectedCert] = useState<Certification | null>(null);
+  const [badgeCert, setBadgeCert] = useState<Certification | null>(null);
   const awsCerts = certifications.filter((c) => c.category === "AWS");
 
   return (
@@ -23,89 +29,22 @@ export function CertificationsSection() {
             Certifications
           </h2>
           <p className="mt-2 text-3xl font-bold sm:text-4xl">Verified Credentials</p>
+          <p className="mx-auto mt-3 max-w-xl text-sm text-muted-foreground">
+            Official cloud and AI/ML certifications backed by Amazon Web Services.
+            Hover over cards for 3D view or click to inspect credentials.
+          </p>
         </motion.div>
 
-        {/* AWS certs — prominent cards */}
-        {/* Fixed card size at every zoom; the count adapts, not the width */}
-        <div className="card-grid mt-10">
+        {/* AWS certs with generous width, floating 3D logo, and certificate preview */}
+        <div className="cert-grid mt-10">
           {awsCerts.map((cert, i) => (
-            <motion.div
+            <CertificateCard3D
               key={cert.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.4, delay: i * 0.1 }}
-              whileHover={{ y: -4, scale: 1.01 }}
-              className="group relative overflow-hidden rounded-xl border border-border bg-card p-6 transition-shadow hover:shadow-lg hover:shadow-accent/5"
-            >
-              {/* Badge image */}
-              {cert.badgeImage ? (
-                <Image
-                  src={cert.badgeImage}
-                  alt={`${cert.name} badge`}
-                  width={56}
-                  height={56}
-                  className="h-14 w-14 object-contain"
-                />
-              ) : (
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-accent/10">
-                  <ShieldCheck className="h-6 w-6 text-accent" />
-                </div>
-              )}
-
-              <h3 className="mt-4 text-base font-semibold text-foreground group-hover:text-accent transition-colors">
-                {cert.name}
-              </h3>
-
-              <p className="mt-1 text-sm text-muted-foreground">{cert.issuer}</p>
-
-              <div className="mt-3 flex flex-wrap gap-2 text-xs text-muted-foreground">
-                <span className="rounded-full border border-border px-2 py-0.5">
-                  {cert.level}
-                </span>
-                <span className="rounded-full border border-border px-2 py-0.5">
-                  {cert.issueDate}
-                </span>
-                {cert.expiryDate && (
-                  <span className="rounded-full border border-border px-2 py-0.5">
-                    → {cert.expiryDate}
-                  </span>
-                )}
-              </div>
-
-              {/* Skills */}
-              <div className="mt-4 flex flex-wrap gap-1.5">
-                {cert.skills.slice(0, 3).map((s) => (
-                  <span
-                    key={s}
-                    className="rounded-md bg-accent/5 px-2 py-0.5 text-xs font-medium text-accent"
-                  >
-                    {s}
-                  </span>
-                ))}
-              </div>
-
-              {cert.verifyUrl && (
-                <a
-                  href={cert.verifyUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-4 inline-flex items-center gap-1 text-xs font-medium text-accent hover:underline"
-                >
-                  Verify on Credly ↗
-                </a>
-              )}
-              {cert.certificateImage && (
-                <a
-                  href={cert.certificateImage}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-foreground hover:text-accent transition-colors"
-                >
-                  View Certificate ↗
-                </a>
-              )}
-            </motion.div>
+              cert={cert}
+              index={i}
+              onShowCertificate={(c) => setSelectedCert(c)}
+              onShowBadge={(c) => setBadgeCert(c)}
+            />
           ))}
         </div>
 
@@ -114,17 +53,33 @@ export function CertificationsSection() {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.4, delay: 0.3 }}
-          className="mt-10 text-center"
+          className="mt-12 text-center"
         >
           <Link
             href="/certifications"
-            className="inline-flex items-center gap-2 text-sm font-medium text-foreground hover:text-accent transition-colors"
+            className="inline-flex items-center gap-2 rounded-full border border-border/80 bg-card/80 px-6 py-2.5 text-sm font-semibold text-foreground shadow-sm transition-all hover:border-accent/50 hover:bg-accent/10 hover:text-accent hover:shadow-md"
           >
-            View all certifications
+            View all certifications ({certifications.length})
             <ArrowRight className="h-4 w-4" />
           </Link>
         </motion.div>
       </div>
+
+      {/* Floating 3D Large Badge Modal */}
+      <FloatingBadgeModal
+        cert={badgeCert}
+        isOpen={Boolean(badgeCert)}
+        onClose={() => setBadgeCert(null)}
+        onOpenCertificate={(c) => setSelectedCert(c)}
+      />
+
+      {/* Lightbox for full certificate viewing */}
+      <CertificateLightbox
+        cert={selectedCert}
+        isOpen={Boolean(selectedCert)}
+        onClose={() => setSelectedCert(null)}
+        onShowBadge={(c) => setBadgeCert(c)}
+      />
     </section>
   );
 }

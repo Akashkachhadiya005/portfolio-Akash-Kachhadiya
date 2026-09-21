@@ -7,6 +7,10 @@ import { ArrowRight, Mail } from "lucide-react";
 import { siteConfig } from "@/data/site-config";
 import { Button3D } from "@/components/ui/Button3D";
 import { AuroraBackground } from "@/components/ui/AuroraBackground";
+import { FloatingBadgeModal } from "@/components/ui/FloatingBadgeModal";
+import { CertificateLightbox } from "@/components/ui/CertificateLightbox";
+import { certifications } from "@/data/certifications";
+import type { Certification } from "@/types";
 import { useSurfaceTilt } from "@/lib/use-surface-tilt";
 
 const titles = [
@@ -19,9 +23,18 @@ const titles = [
 /** AI Practitioner sits in the middle: it is the badge that names the discipline
  *  this portfolio is about, so it holds the centre of the trust strip. */
 const CERT_BADGES = [
-  { src: "/images/certs/aws-ml-engineer.png", alt: "AWS ML Engineer" },
-  { src: "/images/certs/aws-ai-practitioner.png", alt: "AWS AI Practitioner" },
   {
+    id: "aws-ml-engineer",
+    src: "/images/certs/aws-ml-engineer.png",
+    alt: "AWS ML Engineer",
+  },
+  {
+    id: "aws-ai-practitioner",
+    src: "/images/certs/aws-ai-practitioner.png",
+    alt: "AWS AI Practitioner",
+  },
+  {
+    id: "aws-solutions-architect",
     src: "/images/certs/aws-solutions-architect.png",
     alt: "AWS Solutions Architect",
   },
@@ -29,23 +42,28 @@ const CERT_BADGES = [
 
 /**
  * A badge cut from glass.
- *
- * The tilt is the same pointer-lit surface the buttons use, but the highlight is
- * the interesting part: the specular layer is masked with the badge PNG itself
- * (`mask-image`), so the glass exists only where the artwork exists. No plate,
- * no rectangle — the shine follows the badge's own silhouette, which is what
- * makes it read as the object being glass rather than sitting under glass.
+ * Clicking opens the large 3D floating badge modal.
  */
-function CertBadge({ src, alt }: { src: string; alt: string }) {
-  const { setRef, tiltProps } = useSurfaceTilt<HTMLAnchorElement>({ maxTiltDeg: 14 });
+function CertBadge({
+  src,
+  alt,
+  onClick,
+}: {
+  id: string;
+  src: string;
+  alt: string;
+  onClick?: () => void;
+}) {
+  const { setRef, tiltProps } = useSurfaceTilt<HTMLButtonElement>({ maxTiltDeg: 14 });
 
   return (
-    <a
+    <button
       ref={setRef}
       {...tiltProps}
-      href="#certifications"
-      className="cert-badge"
-      aria-label={`${alt} — view certifications`}
+      type="button"
+      onClick={onClick}
+      className="cert-badge cursor-pointer"
+      aria-label={`${alt} — inspect 3D credential badge`}
       style={{ "--badge-src": `url("${src}")` } as React.CSSProperties}
     >
       <span className="cert-badge-plate">
@@ -55,18 +73,27 @@ function CertBadge({ src, alt }: { src: string; alt: string }) {
           width={200}
           height={200}
           aria-hidden="true"
-          className="cert-badge-img"
+          className="cert-badge-img pointer-events-none"
         />
         <span className="cert-badge-glass" aria-hidden="true" />
         <span className="cert-badge-edge" aria-hidden="true" />
       </span>
       <span className="cert-badge-name">{alt}</span>
-    </a>
+    </button>
   );
 }
 
 export function HeroSection() {
   const [titleIndex, setTitleIndex] = useState(0);
+  const [badgeCert, setBadgeCert] = useState<Certification | null>(null);
+  const [selectedCert, setSelectedCert] = useState<Certification | null>(null);
+
+  const handleBadgeClick = (id: string) => {
+    const cert = certifications.find((c) => c.id === id);
+    if (cert) {
+      setBadgeCert(cert);
+    }
+  };
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -162,10 +189,30 @@ export function HeroSection() {
           className="mt-10 flex flex-wrap items-center justify-center gap-4"
         >
           {CERT_BADGES.map((badge) => (
-            <CertBadge key={badge.alt} {...badge} />
+            <CertBadge
+              key={badge.alt}
+              {...badge}
+              onClick={() => handleBadgeClick(badge.id)}
+            />
           ))}
         </motion.div>
       </div>
+
+      {/* Floating 3D Large Badge Modal */}
+      <FloatingBadgeModal
+        cert={badgeCert}
+        isOpen={Boolean(badgeCert)}
+        onClose={() => setBadgeCert(null)}
+        onOpenCertificate={(c) => setSelectedCert(c)}
+      />
+
+      {/* Full Certificate Lightbox */}
+      <CertificateLightbox
+        cert={selectedCert}
+        isOpen={Boolean(selectedCert)}
+        onClose={() => setSelectedCert(null)}
+        onShowBadge={(c) => setBadgeCert(c)}
+      />
     </section>
   );
 }

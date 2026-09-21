@@ -50,13 +50,15 @@ function compile(
   type: number,
   src: string,
 ): WebGLShader | null {
+  if (gl.isContextLost()) return null;
   const sh = gl.createShader(type);
   if (!sh) return null;
   gl.shaderSource(sh, src);
   gl.compileShader(sh);
   if (!gl.getShaderParameter(sh, gl.COMPILE_STATUS)) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error("[aurora] shader compile failed:", gl.getShaderInfoLog(sh));
+    const log = gl.getShaderInfoLog(sh);
+    if (process.env.NODE_ENV !== "production" && log) {
+      console.warn("[aurora] shader compile warning:", log);
     }
     gl.deleteShader(sh);
     return null;
@@ -69,32 +71,46 @@ export function createAuroraRenderer(
 ): AuroraRenderer | null {
   const { canvas } = options;
 
-  const gl =
-    (canvas.getContext("webgl", {
-      alpha: false,
-      antialias: false,
-      depth: false,
-      stencil: false,
-      powerPreference: "low-power",
-      preserveDrawingBuffer: false,
-    }) as WebGLRenderingContext | null) ?? null;
+  const glOpts: WebGLContextAttributes = {
+    alpha: false,
+    antialias: false,
+    depth: false,
+    stencil: false,
+    powerPreference: "low-power",
+    preserveDrawingBuffer: false,
+  };
 
-  if (!gl) return null;
+  const gl =
+    ((canvas.getContext("webgl", glOpts) ??
+      canvas.getContext("experimental-webgl", glOpts)) as WebGLRenderingContext | null) ?? null;
+
+  if (!gl || gl.isContextLost()) return null;
 
   const vs = compile(gl, gl.VERTEX_SHADER, VERTEX_SHADER);
   const fs = compile(gl, gl.FRAGMENT_SHADER, buildFragmentShader());
-  if (!vs || !fs) return null;
+  if (!vs || !fs) {
+    if (vs) gl.deleteShader(vs);
+    if (fs) gl.deleteShader(fs);
+    return null;
+  }
 
   const program = gl.createProgram();
-  if (!program) return null;
+  if (!program) {
+    gl.deleteShader(vs);
+    gl.deleteShader(fs);
+    return null;
+  }
   gl.attachShader(program, vs);
   gl.attachShader(program, fs);
   gl.linkProgram(program);
   if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-    if (process.env.NODE_ENV !== "production") {
-      console.error("[aurora] link failed:", gl.getProgramInfoLog(program));
+    const log = gl.getProgramInfoLog(program);
+    if (process.env.NODE_ENV !== "production" && log) {
+      console.warn("[aurora] link warning:", log);
     }
     gl.deleteProgram(program);
+    gl.deleteShader(vs);
+    gl.deleteShader(fs);
     return null;
   }
   gl.useProgram(program);

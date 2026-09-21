@@ -2164,8 +2164,11 @@ select,
   cursor: pointer;
   border: none;
   padding: 0;
-  touch-action: manipulation;
+  touch-action: none;
   -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
 
   /* Chrome bezel */
   background:
@@ -2209,7 +2212,27 @@ select,
   pointer-events: auto;
 }
 
-.home-fab[data-visible="1"]:hover {
+/* Desktop hover (fine pointer only — prevents sticky hover bugs on mobile) */
+@media (hover: hover) and (pointer: fine) {
+  .home-fab[data-visible="1"]:hover {
+    transform: translateX(-50%) translateY(-5px) scale(1.06) translateZ(0);
+    box-shadow:
+      inset 0 2px 0 rgb(255 255 255 / 0.85),
+      inset 0 -2px 4px rgb(0 0 0 / 0.3),
+      0 0 0 3px color-mix(in srgb, var(--card) 80%, transparent),
+      0 0 0 5px color-mix(in srgb, var(--accent) 55%, transparent),
+      0 18px 34px -8px rgb(0 0 0 / 0.5),
+      0 0 40px -2px color-mix(in srgb, var(--accent) 70%, transparent);
+  }
+
+  .home-fab[data-visible="1"]:hover::before {
+    opacity: 1;
+    transform: rotate(var(--fab-rot, 180deg));
+  }
+}
+
+/* Explicit hover state (driven by pointer events) */
+.home-fab[data-visible="1"][data-hovered="1"] {
   transform: translateX(-50%) translateY(-5px) scale(1.06) translateZ(0);
   box-shadow:
     inset 0 2px 0 rgb(255 255 255 / 0.85),
@@ -2220,7 +2243,9 @@ select,
     0 0 40px -2px color-mix(in srgb, var(--accent) 70%, transparent);
 }
 
-.home-fab[data-visible="1"]:active {
+/* Active and touch-pressed state across all devices */
+.home-fab[data-visible="1"]:active,
+.home-fab[data-visible="1"][data-pressed="1"] {
   transform: translateX(-50%) translateY(2px) scale(0.97) translateZ(0);
   box-shadow:
     inset 0 3px 8px rgb(0 0 0 / 0.4),
@@ -2228,7 +2253,7 @@ select,
     0 4px 10px -4px rgb(0 0 0 / 0.4);
 }
 
-/* Rotating specular streak across the dome */
+/* Rotating specular streak across the dome: works on hover, touch, and hold */
 .home-fab::before {
   content: "";
   position: absolute;
@@ -2238,18 +2263,23 @@ select,
   background: linear-gradient(
     120deg,
     transparent 30%,
-    rgb(255 255 255 / 0.45) 48%,
+    rgb(255 255 255 / 0.55) 48%,
     transparent 62%
   );
   opacity: 0.5;
+  transform: rotate(var(--fab-rot, 0deg));
+  will-change: transform, opacity;
   transition:
     opacity 300ms ease,
-    transform 700ms cubic-bezier(0.22, 0.8, 0.3, 1);
+    transform 600ms cubic-bezier(0.22, 0.8, 0.3, 1);
 }
 
-.home-fab[data-visible="1"]:hover::before {
+.home-fab[data-visible="1"]:active::before,
+.home-fab[data-visible="1"]:focus-visible::before,
+.home-fab[data-visible="1"][data-hovered="1"]::before,
+.home-fab[data-visible="1"][data-pressed="1"]::before {
   opacity: 1;
-  transform: rotate(180deg);
+  transform: rotate(var(--fab-rot, 180deg));
 }
 
 .home-fab svg {
@@ -2270,11 +2300,15 @@ select,
   }
   .home-fab[data-visible="1"],
   .home-fab[data-visible="1"]:hover,
-  .home-fab[data-visible="1"]:active {
+  .home-fab[data-visible="1"]:active,
+  .home-fab[data-visible="1"][data-pressed="1"],
+  .home-fab[data-visible="1"][data-hovered="1"] {
     transform: translateX(-50%);
   }
   .home-fab::before,
-  .home-fab[data-visible="1"]:hover::before {
+  .home-fab[data-visible="1"]:hover::before,
+  .home-fab[data-visible="1"][data-pressed="1"]::before,
+  .home-fab[data-visible="1"][data-hovered="1"]::before {
     transform: none;
   }
 }
@@ -2378,6 +2412,72 @@ select,
 .card-grid > * {
   height: 100%;
   min-width: 0;
+}
+
+/* ============================================================
+   CERTIFICATIONS GRID — generous card width across screen sizes
+   Ensures 3 cards fill the desktop layout comfortably without
+   awkward gutters or narrow squished boxes.
+   ============================================================ */
+.cert-grid {
+  display: grid;
+  gap: 1.5rem;
+  grid-template-columns: 1fr;
+  align-items: stretch;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .cert-grid {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .cert-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.75rem;
+  }
+}
+
+@media (min-width: 1536px) {
+  .cert-grid-wide {
+    grid-template-columns: repeat(auto-fill, minmax(22rem, 1fr));
+  }
+}
+
+.cert-grid > * {
+  height: 100%;
+  min-width: 0;
+}
+
+/* ============================================================
+   3D HEXAGON (SATCON) BADGE CONTOUR LIGHTING
+   Theme-aware:
+   - Light Mode: Clearly visible vibrant cyan contour & glow (clean, zero muddy smudges)
+   - Dark Mode: Sleek, balanced electric aqua neon rim (NOT overblown or blinding)
+   ============================================================ */
+.badge-satcon-glow {
+  filter: drop-shadow(0 0 2px #0fa4af)
+          drop-shadow(0 0 6px rgba(15, 164, 175, 0.65));
+  transition: filter 0.3s ease-out;
+}
+
+.badge-satcon-glow-hover,
+.badge-satcon-glow:hover {
+  filter: drop-shadow(0 0 3px #0fa4af)
+          drop-shadow(0 0 10px rgba(15, 164, 175, 0.8));
+}
+
+.dark .badge-satcon-glow {
+  filter: drop-shadow(0 0 2px #0fa4af)
+          drop-shadow(0 0 6px rgba(15, 164, 175, 0.6));
+}
+
+.dark .badge-satcon-glow-hover,
+.dark .badge-satcon-glow:hover {
+  filter: drop-shadow(0 0 3px #00f2fe)
+          drop-shadow(0 0 10px rgba(0, 242, 254, 0.75));
 }
 
 /* Collision spark effect for 3D skill network */
