@@ -16,6 +16,7 @@ import {
   Award,
 } from "lucide-react";
 import type { Certification } from "@/types";
+import { Button3D } from "@/components/ui/Button3D";
 
 interface CertificateLightboxProps {
   cert: Certification | null;
@@ -139,29 +140,33 @@ export function CertificateLightbox({
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 shrink-0">
+              <div className="flex items-center gap-2.5 shrink-0">
                 {displayImage && (
-                  <button
+                  <Button3D
+                    variant="neutral"
+                    size="icon"
                     type="button"
                     onClick={() => setIsZoomed(!isZoomed)}
-                    className="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-background/60 text-muted-foreground transition-all duration-150 hover:border-accent/40 hover:bg-accent/10 hover:text-foreground active:scale-90 cursor-pointer"
                     title={isZoomed ? "Zoom out" : "Zoom in"}
+                    aria-label={isZoomed ? "Zoom out" : "Zoom in"}
                   >
                     {isZoomed ? (
-                      <ZoomOut className="h-4 w-4" />
+                      <ZoomOut className="h-[20px] w-[20px]" strokeWidth={2.4} />
                     ) : (
-                      <ZoomIn className="h-4 w-4" />
+                      <ZoomIn className="h-[20px] w-[20px]" strokeWidth={2.4} />
                     )}
-                  </button>
+                  </Button3D>
                 )}
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-background/60 text-muted-foreground transition-all duration-150 hover:border-red-500/40 hover:bg-red-500/10 hover:text-red-400 active:scale-90 cursor-pointer"
-                  aria-label="Close dialog"
-                >
-                  <X className="h-5 w-5" />
-                </button>
+                  <Button3D
+                    variant="danger"
+                    size="icon"
+                    type="button"
+                    onClick={onClose}
+                    aria-label="Close dialog"
+                    title="Close dialog"
+                  >
+                    <X className="h-[22px] w-[22px]" strokeWidth={2.6} />
+                  </Button3D>
               </div>
             </div>
 

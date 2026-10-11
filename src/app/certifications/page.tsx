@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { ShieldCheck } from "lucide-react";
 import { CertificationsView } from "@/components/sections/CertificationsView";
-import { certifications } from "@/data/certifications";
+import { BackButton3D } from "@/components/ui/BackButton3D";
 
 export const metadata: Metadata = {
   title: "Certifications",
@@ -13,6 +13,10 @@ export default function CertificationsPage() {
   return (
     <section className="py-20 sm:py-28">
       <div className="page-shell-narrow">
+        <div className="mb-8">
+          <BackButton3D fallbackHref="/" />
+        </div>
+
         <div className="flex flex-col items-start gap-2">
           <div className="inline-flex items-center gap-1.5 rounded-full border border-accent/30 bg-accent/10 px-3 py-1 text-xs font-semibold text-accent">
             <ShieldCheck className="h-3.5 w-3.5" />

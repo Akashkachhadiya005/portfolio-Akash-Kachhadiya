@@ -32,8 +32,11 @@ import { useSurfaceTilt } from "@/lib/use-surface-tilt";
  * the depth cues.
  */
 
+import Link from "next/link";
+
 type Base = {
-  variant?: "primary" | "neutral";
+  variant?: "primary" | "neutral" | "danger";
+  size?: "default" | "icon";
   className?: string;
   children: React.ReactNode;
 };
@@ -45,7 +48,7 @@ type ButtonProps = Base &
   Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, keyof Base> & { href?: undefined };
 
 export function Button3D(props: AnchorProps | ButtonProps) {
-  const { variant = "primary", className, children, ...rest } = props;
+  const { variant = "primary", size = "default", className, children, ...rest } = props;
   const { setRef, tiltProps } = useSurfaceTilt<HTMLElement>({
     maxTiltDeg: 9,
     ripple: true,
@@ -53,7 +56,13 @@ export function Button3D(props: AnchorProps | ButtonProps) {
 
   const shared = {
     ...tiltProps,
-    className: cn("btn5", variant === "neutral" && "btn5-neutral", className),
+    className: cn(
+      "btn5",
+      variant === "neutral" && "btn5-neutral",
+      variant === "danger" && "btn5-danger",
+      size === "icon" && "btn5-icon",
+      className
+    ),
   };
 
   const inner = (
@@ -67,11 +76,26 @@ export function Button3D(props: AnchorProps | ButtonProps) {
   );
 
   if ("href" in props && props.href !== undefined) {
+    const isExternal =
+      props.href.startsWith("http://") ||
+      props.href.startsWith("https://") ||
+      props.href.startsWith("//") ||
+      props.target === "_blank";
+
     const anchorRest = rest as React.AnchorHTMLAttributes<HTMLAnchorElement>;
+
+    if (isExternal) {
+      return (
+        <a {...anchorRest} {...shared} ref={setRef} href={props.href}>
+          {inner}
+        </a>
+      );
+    }
+
     return (
-      <a {...anchorRest} {...shared} ref={setRef} href={props.href}>
+      <Link {...(anchorRest as any)} {...shared} ref={setRef} href={props.href}>
         {inner}
-      </a>
+      </Link>
     );
   }
 

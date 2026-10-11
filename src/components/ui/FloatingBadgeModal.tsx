@@ -10,6 +10,7 @@ import {
 } from "motion/react";
 import { X, Eye, ArrowRight, ShieldCheck } from "lucide-react";
 import type { Certification } from "@/types";
+import { Button3D } from "@/components/ui/Button3D";
 
 interface FloatingBadgeModalProps {
   cert: Certification | null;
@@ -100,15 +101,19 @@ export function FloatingBadgeModal({
           aria-modal="true"
           aria-label={`${cert.name} 3D Badge`}
         >
-          {/* Top Close Button */}
-          <button
-            type="button"
-            onClick={onClose}
-            className="absolute top-5 right-5 sm:top-8 sm:right-8 z-20 flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-white/10 text-white/80 shadow-lg backdrop-blur-md transition-all duration-150 hover:bg-white/20 hover:text-white hover:scale-110 active:scale-95 cursor-pointer"
-            aria-label="Close dialog"
-          >
-            <X className="h-5 w-5" />
-          </button>
+          {/* Top Close Button matching 3D soap style */}
+          <div className="absolute top-5 right-5 sm:top-8 sm:right-8 z-20">
+            <Button3D
+              variant="danger"
+              size="icon"
+              type="button"
+              onClick={onClose}
+              aria-label="Close dialog"
+              title="Close"
+            >
+              <X className="h-[22px] w-[22px]" strokeWidth={2.6} />
+            </Button3D>
+          </div>
 
           {/* Floating Container: Stop propagation so clicking inside doesn't immediately close */}
           <div

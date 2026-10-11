@@ -657,10 +657,45 @@ body {
   background: color-mix(in srgb, var(--soap-top) 60%, transparent);
 }
 
+/* Red soap bar: vibrant crimson/red batch for close and critical actions */
+.btn5-danger {
+  --soap: #dc2626;
+  --soap-top: #f87171;
+  --soap-deep: #b91c1c;
+  --soap-shade: #991b1b;
+  --soap-ink: #ffffff;
+  --soap-carve-lo: #450a0a;
+  --soap-carve-hi: #fecaca;
+}
+
+.btn5-danger::after {
+  background: color-mix(in srgb, var(--soap-top) 65%, transparent);
+}
+
 /* Height-constrained instances (the navbar Resume bar sits on the ThemeToggle's
    optical line) keep the moulding and simply lose the block padding. */
 .btn5.h-9 {
   padding-block: 0;
+}
+
+/* Circular icon-only instances (e.g. lightbox close & zoom controls) */
+.btn5-icon {
+  width: 2.375rem !important;
+  height: 2.375rem !important;
+  padding: 0 !important;
+  border-radius: 9999px !important;
+  flex-shrink: 0;
+  aspect-ratio: 1 / 1;
+}
+
+.btn5-icon .btn5-label {
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn5:focus-visible {

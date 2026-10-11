@@ -21,17 +21,47 @@ export type NavLink = {
   href: string;
 };
 
+export type ProjectBenchmark = {
+  model: string;
+  trainScore?: string;
+  testScore?: string;
+  accuracy?: string;
+  precision?: string;
+  recall?: string;
+  f1Score?: string;
+  cvScore?: string;
+  status?: "best" | "contender" | "baseline";
+};
+
 export type Project = {
   slug: string;
   title: string;
+  tagline: string;
+  domain: "Healthcare AI" | "Customer Analytics" | "Enterprise HR" | "Workforce & Compensation";
   problem: string;
+  datasetInfo: {
+    name: string;
+    records: string;
+    features: string;
+    target: string;
+  };
   approach: string;
   stack: string[];
   impact: string;
+  bestModel: {
+    name: string;
+    metric: string;
+    value: string;
+    subMetric?: string;
+  };
+  generalizationAnalysis?: string;
+  businessRoi?: string;
+  benchmarks?: ProjectBenchmark[];
   challenges?: string;
+  keyInsights?: string[];
   liveUrl?: string;
-  repoUrl?: string;
-  image?: string;
+  repoUrl: string;
+  image: string;
   featured: boolean;
 };
 

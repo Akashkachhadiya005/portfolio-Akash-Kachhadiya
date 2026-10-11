@@ -3,12 +3,13 @@
 import { motion } from "motion/react";
 import { Award, Briefcase, FolderOpen } from "lucide-react";
 import { siteConfig } from "@/data/site-config";
+import { projects } from "@/data/projects";
 import { CountUp } from "@/components/ui/CountUp";
 import { PhotoFrame } from "@/components/ui/PhotoFrame";
 
 const stats = [
   { icon: Award, value: "3", label: "AWS Certifications" },
-  { icon: FolderOpen, value: "4+", label: "ML Projects" },
+  { icon: FolderOpen, value: `${projects.length}+`, label: "ML Projects" },
   { icon: Briefcase, value: "2", label: "Companies" },
 ];
 
